@@ -1,0 +1,518 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>你会使用AsyncTask吗？ | Fleming&#39;s blog</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Fleming Chen">
+    
+
+    
+    <meta name="description" content="&amp;#x524D;&amp;#x8A00;AsyncTask&amp;#x7684;&amp;#x672C;&amp;#x8EAB;&amp;#x5176;&amp;#x5B9E;&amp;#x662F;&amp;#x5BF9;Handler&amp;#x673A;&amp;#x5236;&amp;#x7684;&amp;#x5C01;&amp;#x88C5;&amp;#xFF0C;&amp;#x76EE;&amp;#x7684;&amp;#x662F;&amp;#x8BA9;&amp;#x5F02;&amp;#x6B65;&amp;#x64CD;&amp;#x4F5C;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="你会使用AsyncTask吗？">
+<meta property="og:url" content="https://flemingme.github.io/2017/08/16/你会使用AsyncTask吗？/index.html">
+<meta property="og:site_name" content="Fleming's blog">
+<meta property="og:description" content="&amp;#x524D;&amp;#x8A00;AsyncTask&amp;#x7684;&amp;#x672C;&amp;#x8EAB;&amp;#x5176;&amp;#x5B9E;&amp;#x662F;&amp;#x5BF9;Handler&amp;#x673A;&amp;#x5236;&amp;#x7684;&amp;#x5C01;&amp;#x88C5;&amp;#xFF0C;&amp;#x76EE;&amp;#x7684;&amp;#x662F;&amp;#x8BA9;&amp;#x5F02;&amp;#x6B65;&amp;#x64CD;&amp;#x4F5C;">
+<meta property="og:image" content="https://flemingme.github.io/2017/08/16/你会使用AsyncTask吗？/device-2016-12-18-112626.gif">
+<meta property="og:updated_time" content="2017-08-16T02:40:43.206Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="你会使用AsyncTask吗？">
+<meta name="twitter:description" content="&amp;#x524D;&amp;#x8A00;AsyncTask&amp;#x7684;&amp;#x672C;&amp;#x8EAB;&amp;#x5176;&amp;#x5B9E;&amp;#x662F;&amp;#x5BF9;Handler&amp;#x673A;&amp;#x5236;&amp;#x7684;&amp;#x5C01;&amp;#x88C5;&amp;#xFF0C;&amp;#x76EE;&amp;#x7684;&amp;#x662F;&amp;#x8BA9;&amp;#x5F02;&amp;#x6B65;&amp;#x64CD;&amp;#x4F5C;">
+<meta name="twitter:image" content="https://flemingme.github.io/2017/08/16/你会使用AsyncTask吗？/device-2016-12-18-112626.gif">
+<meta name="twitter:creator" content="@fleming_chen">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Fleming&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head></html>
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Fleming&#39;s blog" title="Fleming&#39;s blog"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Fleming&#39;s blog">Fleming&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">文章</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:flemingme.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/08/16/你会使用AsyncTask吗？/" title="你会使用AsyncTask吗？" itemprop="url">你会使用AsyncTask吗？</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Fleming Chen" target="_blank" itemprop="author">Fleming Chen</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-08-16T02:32:32.000Z" itemprop="datePublished"> 发表于 2017-08-16</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#基本步骤"><span class="toc-number">1.1.</span> <span class="toc-text">基本步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第一种类型"><span class="toc-number">1.2.</span> <span class="toc-text">第一种类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第二种类型"><span class="toc-number">1.3.</span> <span class="toc-text">第二种类型</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#相关"><span class="toc-number">2.</span> <span class="toc-text">相关</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="&#x524D;&#x8A00;"><a href="#&#x524D;&#x8A00;" class="headerlink" title="&#x524D;&#x8A00;"></a>&#x524D;&#x8A00;</h1><p>AsyncTask&#x7684;&#x672C;&#x8EAB;&#x5176;&#x5B9E;&#x662F;&#x5BF9;Handler&#x673A;&#x5236;&#x7684;&#x5C01;&#x88C5;&#xFF0C;&#x76EE;&#x7684;&#x662F;&#x8BA9;&#x5F02;&#x6B65;&#x64CD;&#x4F5C;&#x7684;&#x5B9E;&#x73B0;&#x53D8;&#x5F97;&#x7B80;&#x5355;&#xFF0C;&#x66F4;&#x591A;&#x7684;&#x5173;&#x6CE8;&#x4E1A;&#x52A1;&#x5B9E;&#x73B0;&#x3002;</p>
+<h2 id="&#x57FA;&#x672C;&#x6B65;&#x9AA4;"><a href="#&#x57FA;&#x672C;&#x6B65;&#x9AA4;" class="headerlink" title="&#x57FA;&#x672C;&#x6B65;&#x9AA4;"></a>&#x57FA;&#x672C;&#x6B65;&#x9AA4;</h2><ul>
+<li>&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x7EE7;&#x627F;&#x81EA;AsyncTask&#x7684;&#x7C7B;&#x3002;</li>
+<li>&#x786E;&#x5B9A;<code>AsyncTask&lt;Params&#xFF08;&#x53C2;&#x6570;&#xFF09;, Progress&#xFF08;&#x8FDB;&#x5EA6;&#xFF09;, Result&#xFF08;&#x7ED3;&#x679C;&#xFF09;&gt;</code> &#x6CDB;&#x578B;&#x7684;&#x4E09;&#x4E2A;&#x53C2;&#x6570;&#x7C7B;&#x578B;&#x3002;</li>
+<li>&#x91CD;&#x5199;&#x4EE5;&#x4E0B;&#x65B9;&#x6CD5;&#xFF1A;</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPreExecute</span><span class="params">()</span> <span class="comment">//&#x53EF;&#x9009;</span></span></div><div class="line"><span class="keyword">protected</span> <span class="keyword">abstract</span> Result <span class="title">doInBackground</span><span class="params">(Params... params)</span>; <span class="comment">//&#x5FC5;&#x987B;&#x91CD;&#x5199;</span></div><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPostExecute</span><span class="params">(Result result)</span> <span class="comment">//&#x53EF;&#x9009;&#xFF0C;&#x4F46;&#x4E00;&#x822C;&#x90FD;&#x4F1A;&#x91CD;&#x5199;</span></span></div><div class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onProgressUpdate</span><span class="params">(Progress... values)</span> <span class="comment">//&#x53EF;&#x9009;,&#x5982;&#x679C;&#x4E0D;&#x9700;&#x8981;&#x8FDB;&#x5EA6;&#x53EF;&#x4EE5;&#x5199;Void&#xFF08;&#x5927;&#x5199;&#x7684;V&#xFF09;</span></div></pre></td></tr></table></figure>
+<p>&#x6CE8;&#x610F;&#xFF1A;</p>
+<ol>
+<li><code>onPreExecute</code> &#x65B9;&#x6CD5;&#x4F1A;&#x5728;execute&#x65B9;&#x6CD5;&#x8C03;&#x7528;&#x524D;&#x8C03;&#x7528;&#xFF0C;&#x8FD0;&#x884C;&#x5728;UI&#x7EBF;&#x7A0B;&#xFF0C;<code>&#x53EF;&#x4EE5;&#x505A;&#x8FDB;&#x5EA6;&#x6846;&#x7684;&#x5C55;&#x793A;&#x7B49;</code> &#xFF1B;</li>
+<li><code>doInBackground</code>&#x65B9;&#x6CD5;&#x7684;&#x53C2;&#x6570;&#x662F;&#x53EF;&#x9009;&#x53C2;&#x6570;&#xFF0C;&#x7C7B;&#x578B;&#x7531;&#x521B;&#x5EFA;&#x7C7B;&#x65F6;&#x51B3;&#x5B9A;&#xFF0C;&#x5E76;&#x4E14;&#x8BE5;&#x65B9;&#x6CD5;&#x662F;&#x6267;&#x884C;&#x5728;&#x5B50;&#x7EBF;&#x7A0B;&#x4E2D;&#x7684;&#xFF0C;<code>&#x53EF;&#x4EE5;&#x505A;&#x4E00;&#x4E9B;&#x8017;&#x65F6;&#x64CD;&#x4F5C;</code>&#xFF1B;</li>
+<li><code>onPostExecute</code> &#x65B9;&#x6CD5;&#x7684;&#x53C2;&#x6570;&#x4E5F;&#x662F;&#x521B;&#x5EFA;&#x7C7B;&#x65F6;&#x51B3;&#x5B9A;&#xFF0C;&#x53EF;&#x4EE5;&#x662F;String&#x3001;Bitmap&#x7C7B;&#x578B;&#x7B49;&#xFF0C;&#x8FD0;&#x884C;&#x5728;UI&#x7EBF;&#x7A0B;&#x4E2D;&#xFF0C;&#x6839;&#x636E;&#x8FD4;&#x56DE;&#x7684;result&#xFF0C;&#x8FD9;&#x91CC;&#x7684;result&#x7684;&#x7C7B;&#x578B;&#x5C31;&#x662F;<code>doInBackground</code> &#x7684;&#x8FD4;&#x56DE;&#x503C;&#x7C7B;&#x578B;&#xFF0C;&#x56E0;&#x6B64;<code>&#x53EF;&#x4EE5;&#x66F4;&#x65B0;UI</code> &#xFF1B;</li>
+<li><code>onProgressUpdate</code> &#x65B9;&#x6CD5;&#x7684;&#x53C2;&#x6570;&#x662F;&#x53EF;&#x9009;&#x53C2;&#x6570;&#xFF0C;<code>&#x53EF;&#x4EE5;&#x5C55;&#x793A;&#x4EFB;&#x52A1;&#x5904;&#x7406;&#x7684;&#x8FDB;&#x5EA6;</code>&#xFF0C;&#x4E0D;&#x8FC7;&#x9700;&#x8981;&#x901A;&#x8FC7;&#x5728;<code>doInBackground</code> &#x4E2D;&#x6839;&#x636E;&#x4E0B;&#x8F7D;&#x5185;&#x5BB9;&#x5360;&#x603B;&#x4E0B;&#x8F7D;&#x5185;&#x5BB9;&#x7684;&#x6BD4;&#x4F8B;&#x4E3B;&#x52A8;&#x8C03;&#x7528;<code>publishProgress</code> &#x65B9;&#x6CD5;&#xFF0C;&#x624D;&#x4F1A;&#x56DE;&#x8C03;<code>onProgressUpdate</code> &#x65B9;&#x6CD5;&#x3002;</li>
+</ol>
+<ul>
+<li>&#x5B9E;&#x4F8B;&#x5316;&#x8BE5;&#x5F02;&#x6B65;&#x4EFB;&#x52A1;&#x7C7B;&#xFF0C;&#x5E76;&#x8C03;&#x7528;<code>AsyncTask execute(Params... params)</code> &#x65B9;&#x6CD5;&#x542F;&#x52A8;&#x4EFB;&#x52A1;&#x3002;</li>
+</ul>
+<a id="more"></a>
+<p>&#x5728;&#x672C;&#x9879;&#x76EE;&#x4E2D;&#xFF0C;&#x4F7F;&#x7528;&#x4E86;&#x4E24;&#x79CD;&#x5E38;&#x7528;&#x7684;&#x8FD4;&#x56DE;&#x7C7B;&#x578B;&#x7684;&#x5F02;&#x6B65;&#x4EFB;&#x52A1;&#x7C7B;&#xFF0C;&#x5206;&#x522B;&#x5B8C;&#x6210;&#x4E0B;&#x8F7D;api&#x8FD4;&#x56DE;&#x7684;String&#x7C7B;&#x578B;&#x7684;json&#x6570;&#x636E;&#x5E76;&#x89E3;&#x6790;&#x6210;&#x96C6;&#x5408;&#x6570;&#x636E;&#x548C;Bitmap&#x7C7B;&#x578B;&#x7684;&#x56FE;&#x7247;&#x7684;&#x4EFB;&#x52A1;&#xFF0C;&#x4E3B;&#x8981;&#x4EE3;&#x7801;&#x5982;&#x4E0B;&#xFF1A;</p>
+<p>&#x8FD9;&#x91CC;&#x6211;&#x53D6;&#x7684;&#x662F;&#x77E5;&#x4E4E;&#x65E5;&#x62A5;&#x7684;&#x83B7;&#x53D6;&#x6700;&#x8FD1;&#x6D88;&#x606F;&#x7684;api&#xFF0C;&#x611F;&#x8C22;&#x5927;&#x795E;&#x7684;&#x5171;&#x4EAB;&#xFF0C;&#x5148;&#x4E0A;api&#x6587;&#x6863;&#x94FE;&#x63A5;&#xFF1A;<a href="https://github.com/izzyleung/ZhihuDailyPurify/wiki/%E7%9F%A5%E4%B9%8E%E6%97%A5%E6%8A%A5-API-%E5%88%86%E6%9E%90" target="_blank" rel="external">https://github.com/izzyleung/ZhihuDailyPurify/wiki/%E7%9F%A5%E4%B9%8E%E6%97%A5%E6%8A%A5-API-%E5%88%86%E6%9E%90</a></p>
+<h2 id="&#x7B2C;&#x4E00;&#x79CD;&#x7C7B;&#x578B;"><a href="#&#x7B2C;&#x4E00;&#x79CD;&#x7C7B;&#x578B;" class="headerlink" title="&#x7B2C;&#x4E00;&#x79CD;&#x7C7B;&#x578B;"></a>&#x7B2C;&#x4E00;&#x79CD;&#x7C7B;&#x578B;</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String URL = <span class="string">&quot;http://news-at.zhihu.com/api/4/news/latest&quot;</span>;</div><div class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">StoryAsyncTask</span> <span class="keyword">extends</span> <span class="title">AsyncTask</span>&lt;<span class="title">String</span>, <span class="title">Viod</span>, <span class="title">List</span>&lt;<span class="title">Story</span>.<span class="title">StoriesBean</span>&gt;&gt; </span>{</div><div class="line"> &#xA0;  <span class="meta">@Override</span></div><div class="line"> &#xA0;  <span class="keyword">protected</span> List&lt;Story.StoriesBean&gt; doInBackground(String... params) {</div><div class="line"> &#xA0; &#xA0; &#xA0;  <span class="keyword">return</span> getJsonString(params[<span class="number">0</span>]);<span class="comment">//&#x53C2;&#x6570;&#x4E2A;&#x6570;&#x4E3A;1&#xFF0C;&#x4E0B;&#x6807;&#x5219;&#x4E3A;0</span></div><div class="line"> &#xA0;  }</div><div class="line"></div><div class="line"> &#xA0;  <span class="meta">@Override</span></div><div class="line"> &#xA0;  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPostExecute</span><span class="params">(List&lt;Story.StoriesBean&gt; stories)</span> </span>{</div><div class="line"> &#xA0; &#xA0; &#xA0;  mAdapter.addListData(stories);<span class="comment">//&#x76F4;&#x63A5;&#x8FD4;&#x56DE;adapter&#x6240;&#x9700;&#x8981;&#x7684;&#x96C6;&#x5408;&#x7C7B;&#x578B;&#xFF0C;&#x4E3A;&#x4EC0;&#x4E48;&#x8FD9;&#x6837;&#x505A;&#xFF1F;&#x4FE9;&#x5B57;&#x513F;&#x201C;&#x65B9;&#x4FBF;&#x201D;</span></div><div class="line"> &#xA0; &#xA0; &#xA0;  mRefreshLayout.setRefreshing(<span class="keyword">false</span>);</div><div class="line"> &#xA0;  }</div><div class="line">}</div><div class="line"><span class="comment">//&#x6267;&#x884C;</span></div><div class="line"><span class="keyword">new</span> StoryAsyncTask().execute(URL);</div></pre></td></tr></table></figure>
+<h2 id="&#x7B2C;&#x4E8C;&#x79CD;&#x7C7B;&#x578B;"><a href="#&#x7B2C;&#x4E8C;&#x79CD;&#x7C7B;&#x578B;" class="headerlink" title="&#x7B2C;&#x4E8C;&#x79CD;&#x7C7B;&#x578B;"></a>&#x7B2C;&#x4E8C;&#x79CD;&#x7C7B;&#x578B;</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">ImgLoaderAsyncTask</span> <span class="keyword">extends</span> <span class="title">AsyncTask</span>&lt;<span class="title">String</span>, <span class="title">Void</span>, <span class="title">Bitmap</span>&gt; </span>{</div><div class="line"> &#xA0;  <span class="keyword">private</span> ImageView mImageView;</div><div class="line"> &#xA0;  <span class="keyword">private</span> String mUrl;</div><div class="line"> &#xA0;  <span class="function"><span class="keyword">public</span> <span class="title">ImgLoaderAsyncTask</span><span class="params">(ImageView imageView, String url)</span> </span>{</div><div class="line"> &#xA0; &#xA0; &#xA0;  mImageView = imageView;</div><div class="line"> &#xA0; &#xA0; &#xA0;  mUrl = url;</div><div class="line"> &#xA0;  }</div><div class="line"> &#xA0;  <span class="meta">@Override</span></div><div class="line"> &#xA0;  <span class="function"><span class="keyword">protected</span> Bitmap <span class="title">doInBackground</span><span class="params">(String... params)</span> </span>{</div><div class="line"> &#xA0; &#xA0; &#xA0;  String url = params[<span class="number">0</span>];</div><div class="line"> &#xA0; &#xA0; &#xA0;  <span class="comment">//&#x4ECE;&#x7F51;&#x7EDC;&#x4E0A;&#x83B7;&#x53D6;&#x5230;&#x7684;&#x56FE;&#x7247;&#x5B58;&#x5230;&#x7F13;&#x5B58;&#x4E2D;</span></div><div class="line"> &#xA0; &#xA0; &#xA0;  Bitmap bitmap = getBitmapFromUrl(url);</div><div class="line"> &#xA0; &#xA0; &#xA0;  <span class="keyword">if</span> (bitmap != <span class="keyword">null</span>) {</div><div class="line"> &#xA0; &#xA0; &#xA0; &#xA0; &#xA0;  addBitmapToCache(url, bitmap);</div><div class="line"> &#xA0; &#xA0; &#xA0;  }</div><div class="line"> &#xA0; &#xA0; &#xA0;  <span class="keyword">return</span> bitmap;</div><div class="line"> &#xA0;  }</div><div class="line"> &#xA0;  <span class="meta">@Override</span></div><div class="line"> &#xA0;  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPostExecute</span><span class="params">(Bitmap bitmap)</span> </span>{</div><div class="line"> &#xA0; &#xA0; &#xA0;  <span class="keyword">super</span>.onPostExecute(bitmap);</div><div class="line"> &#xA0; &#xA0; &#xA0;  <span class="keyword">if</span> (mImageView.getTag().equals(mUrl)) { <span class="comment">//&#x8BF7;&#x6CE8;&#x610F;&#xFF0C;&#x8FD9;&#x91CC;&#x591A;&#x52A0;&#x4E86;tag&#x7684;&#x5224;&#x65AD;&#xFF0C;&#x4E3A;&#x4E86;&#x8BA9;&#x56FE;&#x7247;&#x4E0D;&#x9519;&#x4E71;</span></div><div class="line"> &#xA0; &#xA0; &#xA0; &#xA0; &#xA0;  mImageView.setImageBitmap(bitmap);</div><div class="line"> &#xA0; &#xA0; &#xA0;  }</div><div class="line"> &#xA0;  }</div><div class="line">}</div></pre></td></tr></table></figure>
+<h1 id="&#x76F8;&#x5173;"><a href="#&#x76F8;&#x5173;" class="headerlink" title="&#x76F8;&#x5173;"></a>&#x76F8;&#x5173;</h1><p>&#x5173;&#x4E8E;cache&#x7684;&#x90E8;&#x5206;&#xFF0C;&#x8BF7;&#x70B9;&#x51FB;<a href="https://flemingme.github.io/2016/12/17/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8LruCache%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E7%BC%93%E5%AD%98/">&#x5982;&#x4F55;&#x5229;&#x7528;LruCache&#x8FDB;&#x884C;&#x6570;&#x636E;&#x7F13;&#x5B58;</a>&#x8FDB;&#x884C;&#x67E5;&#x770B;&#x3002;</p>
+<p><img src="/2017/08/16/&#x4F60;&#x4F1A;&#x4F7F;&#x7528;AsyncTask&#x5417;&#xFF1F;/device-2016-12-18-112626.gif" width="40%"></p>
+<p>&#x53E6;&#x5916;&#x9644;&#x4E0A;AsyncTask&#x5F02;&#x6B65;&#x4EFB;&#x52A1;&#x4E4B;&#x6E90;&#x7801;&#x89E3;&#x6790;&#xFF1A;<a href="http://blog.csdn.net/maplejaw_/article/details/51441312" target="_blank" rel="external">http://blog.csdn.net/maplejaw_/article/details/51441312</a></p>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/AsycTask/">AsycTask</a><a href="/tags/Handler/">Handler</a><a href="/tags/Message/">Message</a>
+  </div>
+
+</div>
+
+	<div class="article-share" id="share">
+	
+	<div class="share-jiathis">
+	  <div class="jiathis_style_24x24">
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_googleplus"></a>
+	<a class="jiathis_button_douban"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+    var jiathis_config={
+    data_track_clickback:true,
+    sm:"copy,renren,cqq",
+    pic:"",
+    summary:"",
+     ralateuid:{"tsina":"coder_JL"},hideMore:false}
+    
+  </script> 
+<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=
+2141709" charset="utf-8"></script>
+	 </div>
+	
+	</div>
+
+
+</footer>   	       
+	</article>
+	<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2017/02/24/有一种优雅的架构叫MVP架构/" title="有一种优雅的架构叫MVP架构">
+ <strong>下一篇：</strong><br> 
+ <span>有一种优雅的架构叫MVP架构
+</span>
+</a>
+</div>
+
+</nav>
+	
+</div>
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#基本步骤"><span class="toc-number">1.1.</span> <span class="toc-text">基本步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第一种类型"><span class="toc-number">1.2.</span> <span class="toc-text">第一种类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第二种类型"><span class="toc-number">1.3.</span> <span class="toc-text">第二种类型</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#相关"><span class="toc-number">2.</span> <span class="toc-text">相关</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="flemingme" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js"></script>
+</div>
+
+  
+
+  <div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Dialog/" title="Dialog">Dialog<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LruCache/" title="LruCache">LruCache<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Eclipse-ADT/" title="Eclipse ADT">Eclipse ADT<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android-Studio/" title="Android Studio">Android Studio<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/BroadcastReceiver/" title="BroadcastReceiver">BroadcastReceiver<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Git/" title="Git">Git<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/EditText/" title="EditText">EditText<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQLite/" title="SQLite">SQLite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MVP/" title="MVP">MVP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/AsycTask/" title="AsycTask">AsycTask<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Handler/" title="Handler">Handler<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Message/" title="Message">Message<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://www.oschina.net/android" target="_blank" title="Androdi开发专区">Androdi开发专区</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://stormzhang.com" target="_blank" title="stormzhang">stormzhang</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://pengtao.me" target="_blank" title="CPPAlien">CPPAlien</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuxiaolong.me" target="_blank" title="吴小龙同學">吴小龙同學</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://andyleeblog.cn" target="_blank" title="Andy">Andy</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://lawaias.github.io" target="_blank" title="LawAias">LawAias</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.yumez.cn" target="_blank" title="yuez">yuez</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://kotliner.cn" target="_blank" title="Kotlin">Kotlin</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">新浪微博</p>
+    <iframe width="100%" height="119" class="share_self" frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=null&verifier=&dpc=1"></iframe>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/flemingme" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		<a href="https://twitter.com/fleming_chen" target="_blank" class="icon-twitter" title="twitter"></a>
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/flemingchen" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:jialongchen5@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="Fleming Chen">Fleming Chen</a>
+		
+		
+		</p>
+</div></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+  </body>

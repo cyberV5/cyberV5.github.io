@@ -1,0 +1,533 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>有一种优雅的架构叫MVP架构 | Fleming&#39;s blog</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Fleming Chen">
+    
+
+    
+    <meta name="description" content="&amp;#x8F6F;&amp;#x4EF6;&amp;#x5F00;&amp;#x53D1;&amp;#x603B;&amp;#x662F;&amp;#x5F3A;&amp;#x8C03;&amp;#x4E00;&amp;#x4E2A;&amp;#x91CD;&amp;#x70B9;&amp;#xFF0C;&amp;#x5C31;&amp;#x662F;&amp;#x5C3D;&amp;#x53EF;&amp;#x80FD;&amp;#x7684;&amp;#x5C06;&amp;#x7CFB;&amp;#x7EDF;&amp;#x505A;&amp;#x5230;&amp;#x9AD8;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="有一种优雅的架构叫MVP架构">
+<meta property="og:url" content="https://flemingme.github.io/2017/02/24/有一种优雅的架构叫MVP架构/index.html">
+<meta property="og:site_name" content="Fleming's blog">
+<meta property="og:description" content="&amp;#x8F6F;&amp;#x4EF6;&amp;#x5F00;&amp;#x53D1;&amp;#x603B;&amp;#x662F;&amp;#x5F3A;&amp;#x8C03;&amp;#x4E00;&amp;#x4E2A;&amp;#x91CD;&amp;#x70B9;&amp;#xFF0C;&amp;#x5C31;&amp;#x662F;&amp;#x5C3D;&amp;#x53EF;&amp;#x80FD;&amp;#x7684;&amp;#x5C06;&amp;#x7CFB;&amp;#x7EDF;&amp;#x505A;&amp;#x5230;&amp;#x9AD8;">
+<meta property="og:image" content="https://flemingme.github.io/2017/02/24/有一种优雅的架构叫MVP架构/mvp框架图.png">
+<meta property="og:image" content="https://flemingme.github.io/2017/02/24/有一种优雅的架构叫MVP架构/项目结构.png">
+<meta property="og:updated_time" content="2017-02-24T08:14:34.872Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="有一种优雅的架构叫MVP架构">
+<meta name="twitter:description" content="&amp;#x8F6F;&amp;#x4EF6;&amp;#x5F00;&amp;#x53D1;&amp;#x603B;&amp;#x662F;&amp;#x5F3A;&amp;#x8C03;&amp;#x4E00;&amp;#x4E2A;&amp;#x91CD;&amp;#x70B9;&amp;#xFF0C;&amp;#x5C31;&amp;#x662F;&amp;#x5C3D;&amp;#x53EF;&amp;#x80FD;&amp;#x7684;&amp;#x5C06;&amp;#x7CFB;&amp;#x7EDF;&amp;#x505A;&amp;#x5230;&amp;#x9AD8;">
+<meta name="twitter:image" content="https://flemingme.github.io/2017/02/24/有一种优雅的架构叫MVP架构/mvp框架图.png">
+<meta name="twitter:creator" content="@fleming_chen">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Fleming&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head></html>
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Fleming&#39;s blog" title="Fleming&#39;s blog"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Fleming&#39;s blog">Fleming&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">文章</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:flemingme.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/02/24/有一种优雅的架构叫MVP架构/" title="有一种优雅的架构叫MVP架构" itemprop="url">有一种优雅的架构叫MVP架构</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Fleming Chen" target="_blank" itemprop="author">Fleming Chen</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-02-24T06:41:13.000Z" itemprop="datePublished"> 发表于 2017-02-24</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#从职责上来说MVP是："><span class="toc-number">1.</span> <span class="toc-text">从职责上来说MVP是：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MVP的优点"><span class="toc-number">2.</span> <span class="toc-text">MVP的优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MVP的缺点"><span class="toc-number">3.</span> <span class="toc-text">MVP的缺点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Model层"><span class="toc-number">3.1.</span> <span class="toc-text">Model层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Presenter层"><span class="toc-number">3.2.</span> <span class="toc-text">Presenter层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#View层"><span class="toc-number">3.3.</span> <span class="toc-text">View层</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#写在最后"><span class="toc-number">4.</span> <span class="toc-text">写在最后</span></a></li></ol>
+		
+		</div>
+		
+		<p>&#x8F6F;&#x4EF6;&#x5F00;&#x53D1;&#x603B;&#x662F;&#x5F3A;&#x8C03;&#x4E00;&#x4E2A;&#x91CD;&#x70B9;&#xFF0C;&#x5C31;&#x662F;&#x5C3D;&#x53EF;&#x80FD;&#x7684;&#x5C06;&#x7CFB;&#x7EDF;&#x505A;&#x5230;&#x9AD8;&#x5185;&#x805A;&#x4F4E;&#x8026;&#x5408;&#xFF0C;&#x5404;&#x6A21;&#x5757;&#x5404;&#x53F8;&#x5176;&#x804C;&#xFF0C;&#x804C;&#x8D23;&#x5355;&#x4E00;&#xFF0C;&#x903B;&#x8F91;&#x6E05;&#x6670;&#x3002;</p>
+<p><img src="/2017/02/24/&#x6709;&#x4E00;&#x79CD;&#x4F18;&#x96C5;&#x7684;&#x67B6;&#x6784;&#x53EB;MVP&#x67B6;&#x6784;/mvp&#x6846;&#x67B6;&#x56FE;.png" alt="mvp&#x6846;&#x67B6;&#x56FE;"></p>
+<p>&#x4ECE;&#x4E0A;&#x56FE;&#x53EF;&#x4EE5;&#x6E05;&#x6670;&#x7684;&#x7406;&#x89E3;&#x4EC0;&#x4E48;&#x662F;MVP&#xFF08;Model&#x3001;View&#x3001;Presenter&#xFF09;&#x67B6;&#x6784;&#xFF0C;&#x5176;&#x5B9E;MVP&#x662F;&#x4ECE;MVC&#x6A21;&#x5F0F;&#x884D;&#x751F;&#x51FA;&#x6765;&#x7684;&#xFF0C;&#x76EE;&#x7684;&#x5C31;&#x662F;&#x4E3A;&#x4E86;&#x8BA9;&#x89C6;&#x56FE;&#x5C42;view&#x548C;&#x6A21;&#x578B;&#x5C42;model&#x4E4B;&#x95F4;&#x89E3;&#x8026;&#x3002;&#x5B83;&#x4EEC;&#x7684;&#x57FA;&#x672C;&#x601D;&#x60F3;&#x6709;&#x76F8;&#x901A;&#x7684;&#x5730;&#x65B9;&#xFF1A;Controller/Presenter&#x8D1F;&#x8D23;&#x903B;&#x8F91;&#x7684;&#x5904;&#x7406;&#xFF0C;Model&#x63D0;&#x4F9B;&#x6570;&#x636E;&#xFF0C;View&#x8D1F;&#x8D23;&#x663E;&#x793A;&#x3002;&#x4F5C;&#x4E3A;&#x4E00;&#x79CD;&#x65B0;&#x7684;&#x6A21;&#x5F0F;&#xFF0C;MVP&#x4E0E;MVC&#x6709;&#x7740;&#x4E00;&#x4E2A;&#x91CD;&#x5927;&#x7684;&#x533A;&#x522B;&#xFF1A;<strong>&#x5728;MVP&#x4E2D;View&#x5E76;&#x4E0D;&#x76F4;&#x63A5;&#x4F7F;&#x7528;Model&#xFF0C;&#x5B83;&#x4EEC;&#x4E4B;&#x95F4;&#x7684;&#x901A;&#x4FE1;&#x662F;&#x901A;&#x8FC7;Presenter (MVC&#x4E2D;&#x7684;Controller)&#x6765;&#x8FDB;&#x884C;&#x7684;&#xFF0C;&#x6240;&#x6709;&#x7684;&#x4EA4;&#x4E92;&#x90FD;&#x53D1;&#x751F;&#x5728;Presenter&#x5185;&#x90E8;&#xFF0C;&#x800C;&#x5728;MVC&#x4E2D;View&#x4F1A;&#x76F4;&#x63A5;&#x4ECE;Model&#x4E2D;&#x8BFB;&#x53D6;&#x6570;&#x636E;&#x800C;&#x4E0D;&#x662F;&#x901A;&#x8FC7; Controller&#x3002;</strong>&#x5728;MVC&#x91CC;&#xFF0C;View&#x662F;&#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x8BBF;&#x95EE;Model&#x7684;&#xFF01;&#x4ECE;&#x800C;&#xFF0C;View&#x91CC;&#x4F1A;&#x5305;&#x542B;Model&#x4FE1;&#x606F;&#xFF0C;&#x4E0D;&#x53EF;&#x907F;&#x514D;&#x7684;&#x8FD8;&#x8981;&#x5305;&#x62EC;&#x4E00;&#x4E9B;&#x4E1A;&#x52A1;&#x903B;&#x8F91;&#x3002; &#x5728;MVC&#x6A21;&#x578B;&#x91CC;&#xFF0C;&#x66F4;&#x5173;&#x6CE8;&#x7684;Model&#x7684;&#x4E0D;&#x53D8;&#xFF0C;&#x800C;&#x540C;&#x65F6;&#x6709;&#x591A;&#x4E2A;&#x5BF9;Model&#x7684;&#x4E0D;&#x540C;&#x663E;&#x793A;&#xFF0C;&#x53CA;View&#x3002;&#x6240;&#x4EE5;&#xFF0C;&#x5728;MVC&#x6A21;&#x578B;&#x91CC;&#xFF0C;Model&#x4E0D;&#x4F9D;&#x8D56;&#x4E8E;View&#xFF0C;&#x4F46;&#x662F;View&#x662F;&#x4F9D;&#x8D56;&#x4E8E;Model&#x7684;&#x3002;&#x4E0D;&#x4EC5;&#x5982;&#x6B64;&#xFF0C;&#x56E0;&#x4E3A;&#x6709;&#x4E00;&#x4E9B;&#x4E1A;&#x52A1;&#x903B;&#x8F91;&#x5728;View&#x91CC;&#x5B9E;&#x73B0;&#x4E86;&#xFF0C;&#x5BFC;&#x81F4;&#x8981;&#x66F4;&#x6539;View&#x4E5F;&#x662F;&#x6BD4;&#x8F83;&#x56F0;&#x96BE;&#x7684;&#xFF0C;&#x81F3;&#x5C11;&#x90A3;&#x4E9B;&#x4E1A;&#x52A1;&#x903B;&#x8F91;&#x662F;&#x65E0;&#x6CD5;&#x91CD;&#x7528;&#x7684;&#x3002;</p>
+<h3 id="&#x4ECE;&#x804C;&#x8D23;&#x4E0A;&#x6765;&#x8BF4;MVP&#x662F;&#xFF1A;"><a href="#&#x4ECE;&#x804C;&#x8D23;&#x4E0A;&#x6765;&#x8BF4;MVP&#x662F;&#xFF1A;" class="headerlink" title="&#x4ECE;&#x804C;&#x8D23;&#x4E0A;&#x6765;&#x8BF4;MVP&#x662F;&#xFF1A;"></a>&#x4ECE;&#x804C;&#x8D23;&#x4E0A;&#x6765;&#x8BF4;MVP&#x662F;&#xFF1A;</h3><ul>
+<li><strong>View</strong>&#x5C42;&#x8D1F;&#x8D23;&#x5904;&#x7406;&#x7528;&#x6237;&#x4E8B;&#x4EF6;&#x548C;&#x89C6;&#x56FE;&#x90E8;&#x5206;&#x7684;&#x5C55;&#x793A;&#x3002;&#x5728;Android&#x4E2D;&#xFF0C;&#x5B83;&#x53EF;&#x80FD;&#x662F;Activity&#x6216;&#x8005;Fragment&#x7C7B;&#x3002;</li>
+<li><strong>Model</strong>&#x5C42;&#x8D1F;&#x8D23;&#x8BBF;&#x95EE;&#x6570;&#x636E;&#x3002;&#x6570;&#x636E;&#x53EF;&#x4EE5;&#x662F;&#x8FDC;&#x7AEF;&#x7684;Server API&#xFF0C;&#x672C;&#x5730;&#x6570;&#x636E;&#x5E93;&#x6216;&#x8005;SharedPreference&#x7B49;&#x3002;</li>
+<li><strong>Presenter</strong>&#x5C42;&#x662F;&#x8FDE;&#x63A5;&#xFF08;&#x6216;&#x9002;&#x914D;&#xFF09;View&#x548C;Model&#x7684;&#x6865;&#x6881;&#x3002;</li>
+</ul>
+<a id="more"></a>
+<h3 id="MVP&#x7684;&#x4F18;&#x70B9;"><a href="#MVP&#x7684;&#x4F18;&#x70B9;" class="headerlink" title="MVP&#x7684;&#x4F18;&#x70B9;"></a>MVP&#x7684;&#x4F18;&#x70B9;</h3><p>1.&#x964D;&#x4F4E;&#x8026;&#x5408;&#x5EA6;&#xFF0C;&#x9690;&#x85CF;&#x6570;&#x636E;&#xFF0C;Activity&#x4E2D;&#x4EE3;&#x7801;&#x66F4;&#x7B80;&#x6D01;<br>2.&#x6A21;&#x5757;&#x804C;&#x8D23;&#x5212;&#x5206;&#x660E;&#x663E;&#xFF0C;&#x63A5;&#x53E3;&#x660E;&#x786E;<br>3.&#x65B9;&#x4FBF;&#x6D4B;&#x8BD5;&#x9A71;&#x52A8;&#x5F00;&#x53D1;<br>4.&#x4EE3;&#x7801;&#x590D;&#x7528;&#x5EA6;&#x8F83;&#x9AD8;<br>5.&#x4EE3;&#x7801;&#x7075;&#x6D3B;&#x6027;<br><strong>6.google&#x63A8;&#x8350;&#x4F7F;&#x7528;&#xFF0C;&#x54C8;&#x54C8;</strong></p>
+<h3 id="MVP&#x7684;&#x7F3A;&#x70B9;"><a href="#MVP&#x7684;&#x7F3A;&#x70B9;" class="headerlink" title="MVP&#x7684;&#x7F3A;&#x70B9;"></a>MVP&#x7684;&#x7F3A;&#x70B9;</h3><p>1.&#x7C7B;&#x548C;&#x63A5;&#x53E3;&#x7684;&#x6570;&#x91CF;&#x4F1A;&#x589E;&#x52A0;&#x8BB8;&#x591A;&#xFF0C;&#x5EFA;&#x8BAE;&#x7B80;&#x5355;&#x7684;&#x9879;&#x76EE;&#x53EF;&#x4EE5;&#x4E0D;&#x4F7F;&#x7528;&#x6B64;&#x67B6;&#x6784;&#x3002;</p>
+<p>2.Presenter&#x5C42;&#x4E0E;View&#x5C42;&#x5982;&#x679C;&#x5B58;&#x5728;&#x8FC7;&#x591A;&#x7684;&#x8054;&#x7CFB;&#xFF0C;&#x5F80;&#x5F80;View&#x4E00;&#x65E6;&#x66F4;&#x6539;&#xFF0C;Presenter&#x4E5F;&#x9700;&#x8981;&#x66F4;&#x6539;&#x3002;</p>
+<p>&#x7406;&#x8BBA;&#x8BF4;&#x4E86;&#x4E00;&#x5806;&#xFF0C;&#x662F;&#x65F6;&#x5019;&#x4E0A;&#x4E00;&#x6CE2;&#x4EE3;&#x7801;&#x4E86;&#xFF1A;</p>
+<p><img src="/2017/02/24/&#x6709;&#x4E00;&#x79CD;&#x4F18;&#x96C5;&#x7684;&#x67B6;&#x6784;&#x53EB;MVP&#x67B6;&#x6784;/&#x9879;&#x76EE;&#x7ED3;&#x6784;.png" alt="&#x9879;&#x76EE;&#x7ED3;&#x6784;"></p>
+<h4 id="Model&#x5C42;"><a href="#Model&#x5C42;" class="headerlink" title="Model&#x5C42;"></a>Model&#x5C42;</h4><p>&#x8FD9;&#x91CC;&#x6211;&#x4E3B;&#x8981;&#x662F;&#x6307;&#x7684;&#x672C;&#x5730;&#x6570;&#x636E;&#x5E93;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>{</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> _id;</div><div class="line">    <span class="keyword">private</span> String name;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">()</span> </span>{</div><div class="line">    }</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(<span class="keyword">int</span> _id, String name, <span class="keyword">int</span> age)</span> </span>{</div><div class="line">        <span class="keyword">this</span>._id = _id;</div><div class="line">        <span class="keyword">this</span>.name = name;</div><div class="line">        <span class="keyword">this</span>.age = age;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getId</span><span class="params">()</span> </span>{</div><div class="line">        <span class="keyword">return</span> _id;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(<span class="keyword">int</span> _id)</span> </span>{</div><div class="line">        <span class="keyword">this</span>._id = _id;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>{</div><div class="line">        <span class="keyword">return</span> name;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>{</div><div class="line">        <span class="keyword">this</span>.name = name;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>{</div><div class="line">        <span class="keyword">return</span> age;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>{</div><div class="line">        <span class="keyword">this</span>.age = age;</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+<p>&#x4E3A;&#x4E86;&#x8F83;&#x597D;&#x7684;&#x7EF4;&#x62A4;Presenter&#x548C;View&#x4E4B;&#x95F4;&#x7684;&#x5173;&#x7CFB;&#xFF0C;Google&#x63A8;&#x8350;&#x5C06;&#x5176;&#x63A5;&#x53E3;&#x5B58;&#x653E;&#x5728;&#x4E00;&#x4E2A;&#x5951;&#x7EA6;&#x7C7B;&#x4E2D;&#x7BA1;&#x7406;&#x3002;</p>
+<p>BasePresenter</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BasePresenter</span> </span>{</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">start</span><span class="params">()</span></span>;</div><div class="line">}</div></pre></td></tr></table></figure>
+<p>BaseView<t></t></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BaseView</span>&lt;<span class="title">T</span>&gt; </span>{</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setPresenter</span><span class="params">(T presenter)</span></span>;</div><div class="line">}</div></pre></td></tr></table></figure>
+<p>&#x5B9A;&#x4E49;&#x5951;&#x7EA6;&#xFF1A;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserContract</span> </span>{</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">View</span> <span class="keyword">extends</span> <span class="title">BaseView</span>&lt;<span class="title">Presenter</span>&gt; </span>{</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">void</span> <span class="title">showUsers</span><span class="params">(List&lt;User&gt; users)</span></span>;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">void</span> <span class="title">showMessage</span><span class="params">(String msg)</span></span>;</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Presenter</span> <span class="keyword">extends</span> <span class="title">BasePresenter</span> </span>{</div><div class="line"></div><div class="line">        <span class="function">User <span class="title">loadUser</span><span class="params">(<span class="keyword">int</span> id)</span></span>;</div><div class="line"></div><div class="line">        <span class="function">List&lt;User&gt; <span class="title">loadUsers</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">boolean</span> <span class="title">releaseDB</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">boolean</span> <span class="title">clearData</span><span class="params">()</span></span>;</div><div class="line">    }</div><div class="line"></div><div class="line">}</div></pre></td></tr></table></figure>
+<p>&#x8BA9;&#x5404;&#x81EA;&#x7684;Presenter&#x548C;View&#x5B9E;&#x73B0;&#x5176;&#x63A5;&#x53E3;&#x5BF9;&#x5E94;&#x7684;&#x65B9;&#x6CD5;&#xFF0C;&#x540C;&#x65F6;&#x4E5F;&#x53EF;&#x4EE5;&#x4E92;&#x76F8;&#x8C03;&#x7528;&#x5176;&#x63A5;&#x53E3;&#x3002;</p>
+<h4 id="Presenter&#x5C42;"><a href="#Presenter&#x5C42;" class="headerlink" title="Presenter&#x5C42;"></a>Presenter&#x5C42;</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserPresenter</span> <span class="keyword">implements</span> <span class="title">UserContract</span>.<span class="title">Presenter</span> </span>{</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> UserContract.View mUserView;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">UserPresenter</span><span class="params">(@NonNull UserContract.View userView)</span> </span>{</div><div class="line">        mUserView = userView;</div><div class="line">        mUserView.setPresenter(<span class="keyword">this</span>);<span class="comment">//&#x5C06;V&#x548C;P&#x5EFA;&#x7ACB;&#x5173;&#x7CFB;</span></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>{</div><div class="line">        </div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> User <span class="title">loadUser</span><span class="params">(<span class="keyword">int</span> id)</span> </span>{</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> List&lt;User&gt; <span class="title">loadUsers</span><span class="params">()</span> </span>{</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">releaseDB</span><span class="params">()</span> </span>{</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">clearData</span><span class="params">()</span> </span>{</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+<h4 id="View&#x5C42;"><a href="#View&#x5C42;" class="headerlink" title="View&#x5C42;"></a>View&#x5C42;</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserFragment</span> <span class="keyword">extends</span> <span class="title">Fragment</span> <span class="keyword">implements</span> <span class="title">UserAdapter</span>.<span class="title">OnItemClickListener</span>,</span></div><div class="line">        <span class="title">SwipeRefreshLayout</span>.<span class="title">OnRefreshListener</span>, <span class="title">UserContract</span>.<span class="title">View</span>, <span class="title">OnStartDragListener</span> {</div><div class="line"></div><div class="line">    <span class="keyword">private</span> UserContract.Presenter mPresenter;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onResume</span><span class="params">()</span> </span>{</div><div class="line">        <span class="keyword">super</span>.onResume();</div><div class="line">        mPresenter.start();</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPresenter</span><span class="params">(@NonNull UserContract.Presenter presenter)</span> </span>{</div><div class="line">        mPresenter = presenter;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreateOptionsMenu</span><span class="params">(Menu menu, MenuInflater inflater)</span> </span>{</div><div class="line">        <span class="keyword">super</span>.onCreateOptionsMenu(menu, inflater);</div><div class="line">        getActivity().getMenuInflater().inflate(R.menu.menu_main, menu);</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onOptionsItemSelected</span><span class="params">(MenuItem item)</span> </span>{</div><div class="line">        <span class="keyword">int</span> id = item.getItemId();</div><div class="line">        <span class="keyword">switch</span> (id) {</div><div class="line">            <span class="keyword">case</span> R.id.init:</div><div class="line">                mPresenter.start();</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            <span class="keyword">case</span> R.id.clear:</div><div class="line">                mPresenter.clearData();</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">        }</div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>{</div><div class="line">        <span class="keyword">super</span>.onDestroy();</div><div class="line">        <span class="keyword">if</span> (mPresenter.releaseDB()) {</div><div class="line">            Log.d(TAG, <span class="string">&quot;onDestroy: db is released&quot;</span>);</div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+<p>&#x53EF;&#x4EE5;&#x770B;&#x51FA;V&#x7684;&#x63A5;&#x53E3;&#x4F1A;&#x5728;P&#x4E2D;&#x88AB;&#x8C03;&#x7528;&#xFF0C;&#x5E76;&#x5728;V&#x4E2D;&#x88AB;&#x5B9E;&#x73B0;&#xFF0C;&#x5728;P&#x4E2D;&#x662F;&#x4E0D;&#x53BB;&#x5B9E;&#x73B0;&#x7684;&#x3002;&#x540C;&#x6837;&#xFF0C;P&#x7684;&#x63A5;&#x53E3;&#x4F1A;&#x5728;V&#x4E2D;&#x88AB;&#x8C03;&#x7528;&#xFF0C;&#x5E76;&#x5728;P&#x4E2D;&#x88AB;&#x5B9E;&#x73B0;&#x3002;&#x7B80;&#x5355;&#x7684;&#x8BF4;&#xFF0C;&#x5404;&#x81EA;&#x7684;&#x63A5;&#x53E3;&#x5404;&#x81EA;&#x8D1F;&#x8D23;&#x53BB;&#x5B9E;&#x73B0;&#xFF0C;&#x5BF9;&#x65B9;&#x53EA;&#x8C03;&#x7528;&#x5BF9;&#x65B9;&#x7684;&#x63A5;&#x53E3;&#x5373;&#x53EF;&#x3002;</p>
+<p><strong>&#x6CE8;&#x610F;&#xFF1A;</strong>&#x5728;&#x5B9A;&#x4E49;&#x63A5;&#x53E3;&#x7684;&#x65F6;&#x5019;&#xFF0C;View&#x7684;&#x63A5;&#x53E3;&#x5C3D;&#x91CF;&#x662F;&#x8DDF;&#x89C6;&#x56FE;&#x6709;&#x5173;&#x7684;&#xFF0C;&#x5982;showMessage()&#x3001;navigateToMain()&#xFF0C;&#x800C;Presenter&#x7684;&#x63A5;&#x53E3;&#x5C3D;&#x91CF;&#x8DDF;&#x529F;&#x80FD;&#x76F8;&#x5173;&#xFF0C;&#x5982;loadUsers()&#xFF0C;&#x8FD9;&#x6837;&#x7684;&#x597D;&#x5904;&#x662F;&#x5728;&#x76F8;&#x4E92;&#x8C03;&#x7528;&#x7684;&#x65F6;&#x5019;&#x53EF;&#x4EE5;&#x770B;&#x65B9;&#x6CD5;&#x7684;&#x540D;&#x5B57;&#x5C31;&#x6E05;&#x695A;&#x8FD9;&#x91CC;&#x7684;&#x903B;&#x8F91;&#x662F;&#x8981;&#x5B9E;&#x73B0;&#x4EC0;&#x4E48;&#x529F;&#x80FD;&#x4E86;&#xFF0C;&#x89C1;&#x540D;&#x77E5;&#x4E49;&#x5C31;&#x662F;&#x8FD9;&#x6837;&#x610F;&#x601D;&#x3002;</p>
+<h3 id="&#x5199;&#x5728;&#x6700;&#x540E;"><a href="#&#x5199;&#x5728;&#x6700;&#x540E;" class="headerlink" title="&#x5199;&#x5728;&#x6700;&#x540E;"></a>&#x5199;&#x5728;&#x6700;&#x540E;</h3><p>&#x5F53;&#x7136;&#x6709;&#x4EBA;&#x4F1A;&#x8BF4;&#x4E86;&#xFF0C;&#x54B1;&#x5199;&#x7A0B;&#x5E8F;&#x672C;&#x6765;&#x5C31;&#x662F;&#x60F3;&#x7740;&#x5C11;&#x5199;&#x4EE3;&#x7801;&#xFF0C;&#x4E0D;&#x80FD;&#x4E3A;&#x4E86;&#x7528;&#x67B6;&#x6784;&#x800C;&#x53BB;&#x7528;&#x67B6;&#x6784;&#xFF0C;&#x8FD9;&#x6837;&#x4F1A;&#x5F97;&#x4E0D;&#x507F;&#x5931;&#x3002;&#x5BF9;&#x4E8E;&#x4EC0;&#x4E48;&#x5E94;&#x7528;&#x9002;&#x5408;&#x4EC0;&#x4E48;&#x67B6;&#x6784;&#xFF0C;&#x8FD8;&#x662F;&#x6709;&#x5F85;&#x8003;&#x91CF;&#x7684;&#xFF0C;MVP&#x4E0D;&#x7B97;&#x662F;&#x65B0;&#x77E5;&#x8BC6;&#xFF0C;&#x5728;&#x53CD;&#x590D;&#x7684;&#x5B9E;&#x8DF5;&#x4E2D;&#xFF0C;&#x8FD8;&#x662F;&#x80FD;&#x611F;&#x89C9;&#x5230;&#x5B83;&#x662F;&#x5229;&#x5927;&#x4E8E;&#x5F0A;&#x7684;&#xFF0C;&#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x53BB;&#x638C;&#x63E1;&#xFF0C;&#x8FD9;&#x6837;&#x6211;&#x4EEC;&#x81EA;&#x5DF1;&#x5199;&#x7684;&#x65F6;&#x5019;&#x903B;&#x8F91;&#x4E5F;&#x6E05;&#x695A;&#xFF0C;&#x6D4B;&#x8BD5;&#x7684;&#x4E5F;&#x65B9;&#x4FBF;&#xFF0C;&#x4F55;&#x4E50;&#x800C;&#x4E0D;&#x4E3A;&#x5462;&#xFF1F;</p>
+<p>&#x5E0C;&#x671B;&#x672C;&#x6587;&#x5BF9;&#x60A8;&#x65E5;&#x5E38;&#x7684;&#x5F00;&#x53D1;&#x6709;&#x6240;&#x5E2E;&#x52A9;&#xFF01;</p>
+<p>&#x6211;&#x7684;Github: <a href="https://github.com/flemingme" target="_blank" rel="external">https://github.com/flemingme</a></p>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/MVP/">MVP</a>
+  </div>
+
+</div>
+
+	<div class="article-share" id="share">
+	
+	<div class="share-jiathis">
+	  <div class="jiathis_style_24x24">
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_googleplus"></a>
+	<a class="jiathis_button_douban"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+    var jiathis_config={
+    data_track_clickback:true,
+    sm:"copy,renren,cqq",
+    pic:"",
+    summary:"",
+     ralateuid:{"tsina":"coder_JL"},hideMore:false}
+    
+  </script> 
+<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=
+2141709" charset="utf-8"></script>
+	 </div>
+	
+	</div>
+
+
+</footer>   	       
+	</article>
+	<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/08/16/你会使用AsyncTask吗？/" title="你会使用AsyncTask吗？">
+  <strong>上一篇：</strong><br>
+  <span>
+  你会使用AsyncTask吗？</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/02/22/Android自学路线/" title="Android自学路线">
+ <strong>下一篇：</strong><br> 
+ <span>Android自学路线
+</span>
+</a>
+</div>
+
+</nav>
+	
+</div>
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#从职责上来说MVP是："><span class="toc-number">1.</span> <span class="toc-text">从职责上来说MVP是：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MVP的优点"><span class="toc-number">2.</span> <span class="toc-text">MVP的优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MVP的缺点"><span class="toc-number">3.</span> <span class="toc-text">MVP的缺点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Model层"><span class="toc-number">3.1.</span> <span class="toc-text">Model层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Presenter层"><span class="toc-number">3.2.</span> <span class="toc-text">Presenter层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#View层"><span class="toc-number">3.3.</span> <span class="toc-text">View层</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#写在最后"><span class="toc-number">4.</span> <span class="toc-text">写在最后</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="flemingme" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js"></script>
+</div>
+
+  
+
+  <div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Dialog/" title="Dialog">Dialog<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LruCache/" title="LruCache">LruCache<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Eclipse-ADT/" title="Eclipse ADT">Eclipse ADT<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android-Studio/" title="Android Studio">Android Studio<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/BroadcastReceiver/" title="BroadcastReceiver">BroadcastReceiver<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Git/" title="Git">Git<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/EditText/" title="EditText">EditText<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQLite/" title="SQLite">SQLite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MVP/" title="MVP">MVP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/AsycTask/" title="AsycTask">AsycTask<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Handler/" title="Handler">Handler<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Message/" title="Message">Message<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://www.oschina.net/android" target="_blank" title="Androdi开发专区">Androdi开发专区</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://stormzhang.com" target="_blank" title="stormzhang">stormzhang</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://pengtao.me" target="_blank" title="CPPAlien">CPPAlien</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuxiaolong.me" target="_blank" title="吴小龙同學">吴小龙同學</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://andyleeblog.cn" target="_blank" title="Andy">Andy</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://lawaias.github.io" target="_blank" title="LawAias">LawAias</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.yumez.cn" target="_blank" title="yuez">yuez</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://kotliner.cn" target="_blank" title="Kotlin">Kotlin</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">新浪微博</p>
+    <iframe width="100%" height="119" class="share_self" frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=null&verifier=&dpc=1"></iframe>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/flemingme" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		<a href="https://twitter.com/fleming_chen" target="_blank" class="icon-twitter" title="twitter"></a>
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/flemingchen" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:jialongchen5@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="Fleming Chen">Fleming Chen</a>
+		
+		
+		</p>
+</div></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+  </body>

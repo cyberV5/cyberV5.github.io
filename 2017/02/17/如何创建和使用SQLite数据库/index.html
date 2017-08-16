@@ -1,0 +1,559 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>如何创建和使用SQLite数据库 | Fleming&#39;s blog</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Fleming Chen">
+    
+
+    
+    <meta name="description" content="&amp;#x4EC0;&amp;#x4E48;&amp;#x662F;SQLite&amp;#xFF1F;SQLite&amp;#x662F;&amp;#x4E00;&amp;#x6B3E;&amp;#x8F7B;&amp;#x578B;&amp;#x6570;&amp;#x636E;&amp;#x5E93;&amp;#xFF0C;&amp;#x5B83;&amp;#x9075;&amp;#x5B88;ACID&amp;#xFF0C;&amp;#x80FD;&amp;#x591F;&amp;#x5D4C;&amp;#x5165;&amp;#x5230;&amp;#x4F7F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何创建和使用SQLite数据库">
+<meta property="og:url" content="https://flemingme.github.io/2017/02/17/如何创建和使用SQLite数据库/index.html">
+<meta property="og:site_name" content="Fleming's blog">
+<meta property="og:description" content="&amp;#x4EC0;&amp;#x4E48;&amp;#x662F;SQLite&amp;#xFF1F;SQLite&amp;#x662F;&amp;#x4E00;&amp;#x6B3E;&amp;#x8F7B;&amp;#x578B;&amp;#x6570;&amp;#x636E;&amp;#x5E93;&amp;#xFF0C;&amp;#x5B83;&amp;#x9075;&amp;#x5B88;ACID&amp;#xFF0C;&amp;#x80FD;&amp;#x591F;&amp;#x5D4C;&amp;#x5165;&amp;#x5230;&amp;#x4F7F;">
+<meta property="og:updated_time" content="2017-02-22T03:23:36.283Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何创建和使用SQLite数据库">
+<meta name="twitter:description" content="&amp;#x4EC0;&amp;#x4E48;&amp;#x662F;SQLite&amp;#xFF1F;SQLite&amp;#x662F;&amp;#x4E00;&amp;#x6B3E;&amp;#x8F7B;&amp;#x578B;&amp;#x6570;&amp;#x636E;&amp;#x5E93;&amp;#xFF0C;&amp;#x5B83;&amp;#x9075;&amp;#x5B88;ACID&amp;#xFF0C;&amp;#x80FD;&amp;#x591F;&amp;#x5D4C;&amp;#x5165;&amp;#x5230;&amp;#x4F7F;">
+<meta name="twitter:creator" content="@fleming_chen">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Fleming&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head></html>
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Fleming&#39;s blog" title="Fleming&#39;s blog"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Fleming&#39;s blog">Fleming&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">文章</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:flemingme.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/02/17/如何创建和使用SQLite数据库/" title="如何创建和使用SQLite数据库" itemprop="url">如何创建和使用SQLite数据库</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Fleming Chen" target="_blank" itemprop="author">Fleming Chen</a>
+		
+  </p><p class="article-time">
+    <time datetime="2017-02-17T02:07:51.000Z" itemprop="datePublished"> 发表于 2017-02-17</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是SQLite？"><span class="toc-number">1.</span> <span class="toc-text">什么是SQLite？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么要用-SQLite？"><span class="toc-number">2.</span> <span class="toc-text">为什么要用 SQLite？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SQLite支持的数据类型"><span class="toc-number">3.</span> <span class="toc-text">SQLite支持的数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SQLite的优点"><span class="toc-number">4.</span> <span class="toc-text">SQLite的优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SQLite的缺点"><span class="toc-number">5.</span> <span class="toc-text">SQLite的缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#何时应该使用SQLite"><span class="toc-number">6.</span> <span class="toc-text">何时应该使用SQLite</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#何时不应该使用SQLite"><span class="toc-number">7.</span> <span class="toc-text">何时不应该使用SQLite</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="&#x4EC0;&#x4E48;&#x662F;SQLite&#xFF1F;"><a href="#&#x4EC0;&#x4E48;&#x662F;SQLite&#xFF1F;" class="headerlink" title="&#x4EC0;&#x4E48;&#x662F;SQLite&#xFF1F;"></a>&#x4EC0;&#x4E48;&#x662F;SQLite&#xFF1F;</h3><p>SQLite&#x662F;&#x4E00;&#x6B3E;&#x8F7B;&#x578B;&#x6570;&#x636E;&#x5E93;&#xFF0C;&#x5B83;&#x9075;&#x5B88;ACID&#xFF0C;&#x80FD;&#x591F;&#x5D4C;&#x5165;&#x5230;&#x4F7F;&#x7528;&#x5B83;&#x7684;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x4E2D;&#x3002;&#x4F5C;&#x4E3A;&#x4E00;&#x4E2A;&#x81EA;&#x5305;&#x542B;&#x7684;&#x3001;&#x57FA;&#x4E8E;&#x6587;&#x4EF6;&#x7684;&#x6570;&#x636E;&#x5E93;&#xFF0C;SQLite&#x63D0;&#x4F9B;&#x4E86;&#x975E;&#x5E38;&#x51FA;&#x8272;&#x7684;&#x5DE5;&#x5177;&#x96C6;&#x80FD;&#x591F;&#x5904;&#x7406;&#x6240;&#x6709;&#x7C7B;&#x578B;&#x7684;&#x6570;&#x636E;&#xFF0C;&#x4E0E;&#x6258;&#x7BA1;&#x5728;&#x670D;&#x52A1;&#x5668;&#x4E0A;&#x57FA;&#x4E8E;&#x8FDB;&#x7A0B;&#x7684;&#x5173;&#x7CFB;&#x578B;&#x6570;&#x636E;&#x5E93;&#x76F8;&#x6BD4;&#x5B83;&#x7684;&#x7EA6;&#x675F;&#x66F4;&#x5C11;&#xFF0C;&#x4E5F;&#x66F4;&#x6613;&#x7528;&#x3002;</p>
+<p>&#x5F53;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x4F7F;&#x7528;SQLite&#x65F6;&#xFF0C;SQLite&#x5E76;&#x975E;&#x4F5C;&#x4E3A;&#x4E00;&#x4E2A;&#x72EC;&#x7ACB;&#x8FDB;&#x7A0B;&#x901A;&#x8FC7;&#x67D0;&#x79CD;&#x901A;&#x4FE1;&#x534F;&#x8BAE;&#xFF08;&#x4F8B;&#x5982;socket&#xFF09;&#x4E0E;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x901A;&#x4FE1;&#xFF0C;&#x800C;&#x662F;&#x4F5C;&#x4E3A;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x7684;&#x4E00;&#x90E8;&#x5206;&#xFF0C;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x901A;&#x8FC7;&#x8C03;&#x7528;SQLite&#x7684;&#x63A5;&#x53E3;&#x76F4;&#x63A5;&#x8BBF;&#x95EE;&#x6570;&#x636E;&#x6587;&#x4EF6;&#x3002;</p>
+<h3 id="&#x4E3A;&#x4EC0;&#x4E48;&#x8981;&#x7528;-SQLite&#xFF1F;"><a href="#&#x4E3A;&#x4EC0;&#x4E48;&#x8981;&#x7528;-SQLite&#xFF1F;" class="headerlink" title="&#x4E3A;&#x4EC0;&#x4E48;&#x8981;&#x7528; SQLite&#xFF1F;"></a>&#x4E3A;&#x4EC0;&#x4E48;&#x8981;&#x7528; SQLite&#xFF1F;</h3><ul>
+<li>&#x4E0D;&#x9700;&#x8981;&#x4E00;&#x4E2A;&#x5355;&#x72EC;&#x7684;&#x670D;&#x52A1;&#x5668;&#x8FDB;&#x7A0B;&#x6216;&#x64CD;&#x4F5C;&#x7684;&#x7CFB;&#x7EDF;&#xFF08;&#x65E0;&#x670D;&#x52A1;&#x5668;&#x7684;&#xFF09;&#x3002;</li>
+<li>SQLite &#x4E0D;&#x9700;&#x8981;&#x914D;&#x7F6E;&#xFF0C;&#x8FD9;&#x610F;&#x5473;&#x7740;&#x4E0D;&#x9700;&#x8981;&#x5B89;&#x88C5;&#x6216;&#x7BA1;&#x7406;&#x3002;</li>
+<li>&#x4E00;&#x4E2A;&#x5B8C;&#x6574;&#x7684; SQLite &#x6570;&#x636E;&#x5E93;&#x662F;&#x5B58;&#x50A8;&#x5728;&#x4E00;&#x4E2A;&#x5355;&#x4E00;&#x7684;&#x8DE8;&#x5E73;&#x53F0;&#x7684;&#x78C1;&#x76D8;&#x6587;&#x4EF6;&#x3002;</li>
+<li>SQLite &#x662F;&#x975E;&#x5E38;&#x5C0F;&#x7684;&#xFF0C;&#x662F;&#x8F7B;&#x91CF;&#x7EA7;&#x7684;&#xFF0C;&#x5B8C;&#x5168;&#x914D;&#x7F6E;&#x65F6;&#x5C0F;&#x4E8E; 400KiB&#xFF0C;&#x7701;&#x7565;&#x53EF;&#x9009;&#x529F;&#x80FD;&#x914D;&#x7F6E;&#x65F6;&#x5C0F;&#x4E8E;250KiB&#x3002;</li>
+<li>SQLite &#x662F;&#x81EA;&#x7ED9;&#x81EA;&#x8DB3;&#x7684;&#xFF0C;&#x8FD9;&#x610F;&#x5473;&#x7740;&#x4E0D;&#x9700;&#x8981;&#x4EFB;&#x4F55;&#x5916;&#x90E8;&#x7684;&#x4F9D;&#x8D56;&#x3002;</li>
+<li>SQLite &#x4E8B;&#x52A1;&#x662F;&#x5B8C;&#x5168;&#x517C;&#x5BB9; ACID &#x7684;&#xFF0C;&#x5141;&#x8BB8;&#x4ECE;&#x591A;&#x4E2A;&#x8FDB;&#x7A0B;&#x6216;&#x7EBF;&#x7A0B;&#x5B89;&#x5168;&#x8BBF;&#x95EE;&#x3002;</li>
+<li>SQLite &#x652F;&#x6301; SQL92&#xFF08;SQL2&#xFF09;&#x6807;&#x51C6;&#x7684;&#x5927;&#x591A;&#x6570;&#x67E5;&#x8BE2;&#x8BED;&#x8A00;&#x7684;&#x529F;&#x80FD;&#x3002;</li>
+<li>SQLite &#x4F7F;&#x7528; ANSI-C &#x7F16;&#x5199;&#x7684;&#xFF0C;&#x5E76;&#x63D0;&#x4F9B;&#x4E86;&#x7B80;&#x5355;&#x548C;&#x6613;&#x4E8E;&#x4F7F;&#x7528;&#x7684; API&#x3002;</li>
+<li>SQLite &#x53EF;&#x5728; UNIX&#xFF08;Linux, Mac OS-X, Android, iOS&#xFF09;&#x548C; Windows&#xFF08;Win32, WinCE, WinRT&#xFF09;&#x4E2D;&#x8FD0;&#x884C;&#x3002;</li>
+</ul>
+<a id="more"></a>
+<h3 id="SQLite&#x652F;&#x6301;&#x7684;&#x6570;&#x636E;&#x7C7B;&#x578B;"><a href="#SQLite&#x652F;&#x6301;&#x7684;&#x6570;&#x636E;&#x7C7B;&#x578B;" class="headerlink" title="SQLite&#x652F;&#x6301;&#x7684;&#x6570;&#x636E;&#x7C7B;&#x578B;"></a>SQLite&#x652F;&#x6301;&#x7684;&#x6570;&#x636E;&#x7C7B;&#x578B;</h3><p>SQLite&#x652F;&#x6301;&#x7684;&#x6570;&#x636E;&#x7C7B;&#x578B;&#x5305;&#x62EC;&#xFF1A;NULL&#x3001;INTEGER&#x3001;REAL&#x3001;TEXT&#x3001;BLOB&#x3002;</p>
+<h3 id="SQLite&#x7684;&#x4F18;&#x70B9;"><a href="#SQLite&#x7684;&#x4F18;&#x70B9;" class="headerlink" title="SQLite&#x7684;&#x4F18;&#x70B9;"></a>SQLite&#x7684;&#x4F18;&#x70B9;</h3><ul>
+<li><strong>&#x57FA;&#x4E8E;&#x6587;&#x4EF6;</strong>&#x6574;&#x4E2A;&#x6570;&#x636E;&#x5E93;&#x5B8C;&#x5168;&#x7531;&#x78C1;&#x76D8;&#x4E0A;&#x7684;&#x4E00;&#x4E2A;.db&#x6587;&#x4EF6;&#x6784;&#x6210;&#xFF0C;&#x8FD9;&#x4F7F;&#x5F97;&#x5B83;&#x7684;&#x53EF;&#x79FB;&#x690D;&#x6027;&#x975E;&#x5E38;&#x597D;&#x3002;</li>
+<li><strong>&#x6807;&#x51C6;&#x5316;</strong>&#x5C3D;&#x7BA1;&#x5B83;&#x770B;&#x8D77;&#x6765;&#x50CF;&#x4E00;&#x4E2A;&#x201C;&#x7B80;&#x5316;&#x7248;&#x201D;&#x7684;&#x6570;&#x636E;&#x5E93;&#x5B9E;&#x73B0;&#xFF0C;&#x4F46;&#x662F;SQLite&#x786E;&#x5B9E;&#x652F;&#x6301;SQL&#x3002;&#x5B83;&#x7701;&#x7565;&#x4E86;&#x4E00;&#x4E9B;&#x529F;&#x80FD;&#xFF08;RIGHT OUTER JOIN&#x548C;FOR EACH STATEMENT&#xFF09;&#xFF0C;&#x4F46;&#x540C;&#x65F6;&#x4E5F;&#x589E;&#x52A0;&#x4E86;&#x4E00;&#x4E9B;&#x989D;&#x5916;&#x7684;&#x529F;&#x80FD;&#x3002;</li>
+<li><strong>&#x975E;&#x5E38;&#x9002;&#x5408;&#x5F00;&#x53D1;&#x751A;&#x81F3;&#x662F;&#x6D4B;&#x8BD5;</strong>&#x5728;&#x5927;&#x591A;&#x6570;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x7684;&#x5F00;&#x53D1;&#x9636;&#x6BB5;&#xFF0C;&#x5927;&#x90E8;&#x5206;&#x5F00;&#x53D1;&#x4EBA;&#x5458;&#x53EF;&#x80FD;&#x90FD;&#x975E;&#x5E38;&#x9700;&#x8981;&#x4E00;&#x4E2A;&#x80FD;&#x591F;&#x652F;&#x6301;&#x5E76;&#x53D1;&#x6269;&#x5C55;&#x7684;&#x89E3;&#x51B3;&#x65B9;&#x6848;&#x3002;SQLite &#x5305;&#x542B;&#x4E30;&#x5BCC;&#x7684;&#x529F;&#x80FD;&#xFF0C;&#x6240;&#x80FD;&#x63D0;&#x4F9B;&#x7684;&#x7279;&#x6027;&#x8D85;&#x4E4E;&#x5F00;&#x53D1;&#x6240;&#x9700;&#xFF0C;&#x4F7F;&#x7528;&#x8D77;&#x6765;&#x4E5F;&#x975E;&#x5E38;&#x7B80;&#x6D01;&#x2014;&#x2014;&#x53EA;&#x9700;&#x8981;&#x4E00;&#x4E2A;&#x6587;&#x4EF6;&#x548C;&#x4E00;&#x4E2A;C&#x94FE;&#x63A5;&#x5E93;&#x3002;</li>
+</ul>
+<h3 id="SQLite&#x7684;&#x7F3A;&#x70B9;"><a href="#SQLite&#x7684;&#x7F3A;&#x70B9;" class="headerlink" title="SQLite&#x7684;&#x7F3A;&#x70B9;"></a>SQLite&#x7684;&#x7F3A;&#x70B9;</h3><ul>
+<li><strong>&#x6CA1;&#x6709;&#x7528;&#x6237;&#x7BA1;&#x7406;</strong>&#x9AD8;&#x7EA7;&#x6570;&#x636E;&#x5E93;&#x90FD;&#x652F;&#x6301;&#x7528;&#x6237;&#x7CFB;&#x7EDF;&#xFF0C;&#x4F8B;&#x5982;&#x7BA1;&#x7406;&#x8FDE;&#x63A5;&#x5BF9;&#x6570;&#x636E;&#x5E93;&#x548C;&#x8868;&#x7684;&#x8BBF;&#x95EE;&#x6743;&#x9650;&#x3002;&#x9274;&#x4E8E;SQLite&#x7684;&#x76EE;&#x7684;&#x548C;&#x6027;&#x8D28;&#xFF08;&#x6CA1;&#x6709;&#x591A;&#x5BA2;&#x6237;&#x7AEF;&#x5E76;&#x53D1;&#x7684;&#x9AD8;&#x5C42;&#x8BBE;&#x8BA1;&#xFF09;&#xFF0C;&#x5B83;&#x5E76;&#x4E0D;&#x5305;&#x542B;&#x8FD9;&#x4E9B;&#x529F;&#x80FD;&#x3002;</li>
+<li><strong>&#x7F3A;&#x5C11;&#x901A;&#x8FC7;&#x4F18;&#x5316;&#x83B7;&#x5F97;&#x989D;&#x5916;&#x6027;&#x80FD;&#x7684;&#x7A7A;&#x95F4;</strong>&#x8FD8;&#x662F;&#x7531;&#x4E8E;&#x8BBE;&#x8BA1;&#x65B9;&#x9762;&#x7684;&#x539F;&#x56E0;&#xFF0C;&#x65E0;&#x6CD5;&#x901A;&#x8FC7;&#x4F18;&#x5316;SQLite&#x83B7;&#x5F97;&#x5927;&#x91CF;&#x7684;&#x989D;&#x5916;&#x6027;&#x80FD;&#x3002;&#x8FD9;&#x4E2A;&#x7C7B;&#x5E93;&#x975E;&#x5E38;&#x5BB9;&#x6613;&#x8C03;&#x6574;&#x3001;&#x4E5F;&#x975E;&#x5E38;&#x5BB9;&#x6613;&#x4F7F;&#x7528;&#x3002;&#x5B83;&#x5E76;&#x4E0D;&#x590D;&#x6742;&#xFF0C;&#x6240;&#x4EE5;&#x4ECE;&#x6280;&#x672F;&#x4E0A;&#x65E0;&#x6CD5;&#x8BA9;&#x5B83;&#x53D8;&#x5F97;&#x66F4;&#x5FEB;&#xFF0C;&#x56E0;&#x4E3A;&#x5B83;&#x5DF2;&#x7ECF;&#x5F88;&#x5FEB;&#x4E86;&#x3002;</li>
+</ul>
+<h3 id="&#x4F55;&#x65F6;&#x5E94;&#x8BE5;&#x4F7F;&#x7528;SQLite"><a href="#&#x4F55;&#x65F6;&#x5E94;&#x8BE5;&#x4F7F;&#x7528;SQLite" class="headerlink" title="&#x4F55;&#x65F6;&#x5E94;&#x8BE5;&#x4F7F;&#x7528;SQLite"></a>&#x4F55;&#x65F6;&#x5E94;&#x8BE5;&#x4F7F;&#x7528;SQLite</h3><ul>
+<li><strong>&#x5D4C;&#x5165;&#x5F0F;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;</strong>&#x6240;&#x6709;&#x9700;&#x8981;&#x53EF;&#x79FB;&#x690D;&#x6027;&#x3001;&#x4E0D;&#x9700;&#x8981;&#x6269;&#x5C55;&#x7684;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#xFF0C;&#x4F8B;&#x5982;&#x5355;&#x7528;&#x6237;&#x7684;&#x672C;&#x5730;&#x5E94;&#x7528;&#x3001;&#x79FB;&#x52A8;&#x5E94;&#x7528;&#x6216;&#x8005;&#x6E38;&#x620F;&#x3002;</li>
+<li><strong>&#x66FF;&#x4EE3;&#x78C1;&#x76D8;&#x8BBF;&#x95EE;</strong>&#x5728;&#x5F88;&#x591A;&#x60C5;&#x51B5;&#x4E0B;&#xFF0C;&#x9700;&#x8981;&#x76F4;&#x63A5;&#x8BFB;&#x5199;&#x78C1;&#x76D8;&#x6587;&#x4EF6;&#x7684;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x53EF;&#x4EE5;&#x5207;&#x6362;&#x5230;SQLite&#x4ECE;&#x800C;&#x53D7;&#x76CA;&#x4E8E;SQLite&#x63D0;&#x4F9B;&#x7684;&#x989D;&#x5916;&#x529F;&#x80FD;&#x4EE5;&#x53CA;&#x4F7F;&#x7528;&#x7ED3;&#x6784;&#x5316;&#x67E5;&#x8BE2;&#x8BED;&#x8A00;&#xFF08;SQL&#xFF09;&#x6240;&#x5E26;&#x6765;&#x7684;&#x7B80;&#x4FBF;&#x6027;&#x3002;</li>
+<li><strong>&#x6D4B;&#x8BD5;</strong>&#x5BF9;&#x5927;&#x90E8;&#x5206;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x800C;&#x8A00;&#x6CA1;&#x5FC5;&#x8981;&#x4F7F;&#x7528;&#x989D;&#x5916;&#x7684;&#x8FDB;&#x7A0B;&#x6D4B;&#x8BD5;&#x4E1A;&#x52A1;&#x903B;&#x8F91;&#xFF08;&#x4F8B;&#x5982;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x7684;&#x4E3B;&#x8981;&#x76EE;&#x6807;&#xFF1A;&#x529F;&#x80FD;&#xFF09;&#x3002;</li>
+</ul>
+<h3 id="&#x4F55;&#x65F6;&#x4E0D;&#x5E94;&#x8BE5;&#x4F7F;&#x7528;SQLite"><a href="#&#x4F55;&#x65F6;&#x4E0D;&#x5E94;&#x8BE5;&#x4F7F;&#x7528;SQLite" class="headerlink" title="&#x4F55;&#x65F6;&#x4E0D;&#x5E94;&#x8BE5;&#x4F7F;&#x7528;SQLite"></a>&#x4F55;&#x65F6;&#x4E0D;&#x5E94;&#x8BE5;&#x4F7F;&#x7528;SQLite</h3><ul>
+<li><strong>&#x591A;&#x7528;&#x6237;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;</strong>&#x5982;&#x679C;&#x6709;&#x591A;&#x4E2A;&#x5BA2;&#x6237;&#x7AEF;&#x9700;&#x8981;&#x8BBF;&#x95EE;&#x5E76;&#x4F7F;&#x7528;&#x540C;&#x4E00;&#x4E2A;&#x6570;&#x636E;&#x5E93;&#xFF0C;&#x90A3;&#x4E48;&#x6700;&#x597D;&#x4F7F;&#x7528;&#x529F;&#x80FD;&#x5B8C;&#x6574;&#x7684;&#x5173;&#x7CFB;&#x578B;&#x6570;&#x636E;&#x5E93;&#xFF08;&#x4F8B;&#x5982;MySQL&#xFF09;&#xFF0C;&#x800C;&#x4E0D;&#x662F;&#x9009;&#x62E9;SQLite&#x3002;</li>
+<li><strong>&#x9700;&#x8981;&#x9AD8;&#x5199;&#x5165;&#x91CF;&#x7684;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;</strong>&#x5199;&#x64CD;&#x4F5C;&#x662F;SQLite&#x7684;&#x4E00;&#x4E2A;&#x5C40;&#x9650;&#x3002;&#x8BE5;DBMS&#x5728;&#x540C;&#x4E00;&#x65F6;&#x523B;&#x4EC5;&#x5141;&#x8BB8;&#x4E00;&#x4E2A;&#x5199;&#x64CD;&#x4F5C;&#xFF0C;&#x56E0;&#x800C;&#x4E5F;&#x9650;&#x5236;&#x4E86;&#x5176;&#x541E;&#x5410;&#x91CF;&#x3002;</li>
+</ul>
+<p>&#x8BF4;&#x4E86;&#x8FD9;&#x4E48;&#x591A;&#xFF0C;&#x90A3;&#x5982;&#x4F55;&#x521B;&#x5EFA;&#x548C;&#x4F7F;&#x7528;SQLite&#x6570;&#x636E;&#x5E93;&#x5462;&#xFF1F;</p>
+<p><strong>1.&#x521B;&#x5EFA;&#x7C7B;&#x7EE7;&#x627F;SQLiteOpenHelper&#xFF0C;&#x5E76;&#x91CD;&#x5199;onCreate&#x548C;onUpgrade&#x65B9;&#x6CD5;&#x3002;</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">DBContract</span> </span>{</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">DBContract</span><span class="params">()</span> </span>{}</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">UserEntity</span> <span class="keyword">implements</span> <span class="title">BaseColumns</span> </span>{</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String TABLE_NAME = <span class="string">&quot;user&quot;</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String COLUMN_NAME_UESR_ID = <span class="string">&quot;_id&quot;</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String COLUMN_NAME_USER_NAME = <span class="string">&quot;name&quot;</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String COLUMN_NAME_USER_AGE = <span class="string">&quot;age&quot;</span>;</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+<p>&#x8FD9;&#x91CC;&#x6211;&#x4E00;&#x822C;&#x4F1A;&#x5199;&#x4E00;&#x4E2A;&#x5951;&#x7EA6;&#x7C7B;&#xFF0C;&#x901A;&#x8FC7;ORM&#x7684;&#x601D;&#x60F3;&#xFF0C;&#x5C06;&#x6570;&#x636E;&#x8868;&#x62BD;&#x8C61;&#x6210;&#x5BF9;&#x8C61;&#xFF0C;&#x7528;&#x6765;&#x8BB0;&#x5F55;&#x6570;&#x636E;&#x8868;&#x7684;&#x76F8;&#x5173;&#x4FE1;&#x606F;&#xFF0C;&#x65B9;&#x4FBF;&#x7F16;&#x8F91;&#x548C;&#x8C03;&#x7528;&#x3002;</p>
+<p><strong>2.&#x7F16;&#x5199;sql&#xFF0C;&#x5728;onCreate&#x4E2D;&#x901A;&#x8FC7;db.execSQL(sql)&#x6267;&#x884C;sql&#x3002;</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(SQLiteDatabase db)</span> </span>{</div><div class="line">        String sql = <span class="string">&quot;CREATE TABLE &quot;</span> + DBContract.UserEntity.TABLE_NAME + <span class="string">&quot;( &quot;</span></div><div class="line">                + DBContract.UserEntity.COLUMN_NAME_UESR_ID + <span class="string">&quot; INTEGER PRIMARY KEY NOT NULL, &quot;</span></div><div class="line">                + DBContract.UserEntity.COLUMN_NAME_USER_NAME + <span class="string">&quot; TEXT, &quot;</span></div><div class="line">                + DBContract.UserEntity.COLUMN_NAME_USER_AGE +<span class="string">&quot; INTEGER );&quot;</span>;</div><div class="line">        db.execSQL(sql);</div><div class="line">}</div></pre></td></tr></table></figure>
+<p>&#x6CE8;&#x610F;sql&#x7684;&#x7F16;&#x5199;&#x89C4;&#x8303;&#x53CA;&#x7A7A;&#x683C;&#xFF0C;&#x5EFA;&#x8BAE;&#x5173;&#x952E;&#x5B57;&#x5927;&#x5199;&#x3002;</p>
+<p><strong>3.&#x5728;&#x6784;&#x9020;&#x65B9;&#x6CD5;&#x4E2D;&#x4F20;&#x5165;&#x6570;&#x636E;&#x5E93;&#x7684;&#x540D;&#x5B57;&#x548C;&#x7248;&#x672C;&#x53F7;&#x7B49;&#x53C2;&#x6570;&#x3002;</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DB_VERSION = <span class="number">1</span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">DBHelper</span><span class="params">(Context c, String dbName)</span> </span>{</div><div class="line">    <span class="keyword">super</span>(c, dbName, <span class="keyword">null</span>, DB_VERSION);</div><div class="line">}</div></pre></td></tr></table></figure>
+<p><strong>4.&#x5728;onUpgrade&#x65B9;&#x6CD5;&#x4E2D;&#x53EF;&#x4EE5;&#x5347;&#x7EA7;&#x6570;&#x636E;&#x5E93;&#x3002;</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onUpgrade</span><span class="params">(SQLiteDatabase db, <span class="keyword">int</span> oldVersion, <span class="keyword">int</span> newVersion)</span> </span>{</div><div class="line">        <span class="keyword">if</span> (newVersion &gt; oldVersion) {</div><div class="line">            db.execSQL(<span class="string">&quot;DROP TABLE IF EXISTS &quot;</span> + DBContract.UserEntity.TABLE_NAME);</div><div class="line">            onCreate(db);</div><div class="line">        }</div><div class="line">}</div></pre></td></tr></table></figure>
+<p>&#x8FD9;&#x91CC;&#x5224;&#x65AD;&#x5982;&#x679C;&#x6709;&#x65B0;&#x7248;&#x672C;&#xFF0C;&#x5C31;&#x6267;&#x884C;sql&#x5220;&#x9664;&#x6570;&#x636E;&#x8868;&#x518D;&#x521B;&#x5EFA;&#x65B0;&#x7684;&#xFF0C;&#x4E5F;&#x53EF;&#x4EE5;&#x505A;&#x5176;&#x4ED6;&#x64CD;&#x4F5C;&#x3002;</p>
+<p><strong>5.&#x5B9E;&#x4F8B;&#x5316;&#x8BE5;&#x7C7B;&#x83B7;&#x53D6;db&#x5BF9;&#x8C61;&#x3002;</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mHelper = <span class="keyword">new</span> DBHelper(context, dbName);</div><div class="line"></div><div class="line"><span class="comment">//&#x83B7;&#x53D6;&#x53EF;&#x5199;&#x7684;&#x6570;&#x636E;&#x5E93;&#x5BF9;&#x8C61;&#xFF0C;&#x7528;&#x4E8E;&#x589E;&#x5220;&#x6539;</span></div><div class="line">SQLiteDatabase db = mHelper.getWritableDatabase();</div><div class="line"><span class="comment">//&#x83B7;&#x53D6;&#x53EA;&#x8BFB;&#x7684;&#x6570;&#x636E;&#x5E93;&#x5BF9;&#x8C61;&#xFF0C;&#x7528;&#x4E8E;&#x67E5;&#x8BE2;</span></div><div class="line">SQLiteDatabase db = mHelper.getReadableDatabase();</div></pre></td></tr></table></figure>
+<p><strong>6.CRUD&#x64CD;&#x4F5C;&#x3002;</strong></p>
+<p><strong>(1) Create(&#x521B;&#x5EFA;)</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">insert</span><span class="params">(User user)</span> </span>{</div><div class="line">    <span class="keyword">final</span> SQLiteDatabase db = mHelper.getWritableDatabase();</div><div class="line"></div><div class="line">    ContentValues values = <span class="keyword">new</span> ContentValues();</div><div class="line">    <span class="keyword">if</span> (user.getId() != <span class="number">0</span>) values.put(DBContract.UserEntity.COLUMN_NAME_UESR_ID, user.getId());</div><div class="line">    <span class="keyword">if</span> (!TextUtils.isEmpty(user.getName())) values.put(DBContract.UserEntity.COLUMN_NAME_USER_NAME, user.getName());</div><div class="line">    <span class="keyword">if</span> (user.getAge() != <span class="number">0</span>) values.put(DBContract.UserEntity.COLUMN_NAME_USER_AGE, user.getAge());</div><div class="line"></div><div class="line">    <span class="keyword">long</span> _id = db.insert(DBContract.UserEntity.TABLE_NAME, <span class="keyword">null</span>, values);</div><div class="line"></div><div class="line">    db.close();</div><div class="line"></div><div class="line">    <span class="keyword">return</span> _id &gt; <span class="number">0</span>;</div><div class="line">}</div></pre></td></tr></table></figure>
+<p>&#x8FD9;&#x91CC;&#x4E3B;&#x8981;&#x662F;&#x5229;&#x7528;ContentValues&#x7C7B;&#xFF0C;&#x901A;&#x8FC7;SQLiteDatabase&#x7684;insert&#x65B9;&#x6CD5;&#xFF0C;&#x5C06;&#x503C;&#x63D2;&#x5165;&#x8FDB;&#x53BB;&#x3002;&#x5F53;&#x7136;&#x719F;&#x6089;sql&#x7684;&#x8FD8;&#x53EF;&#x4EE5;&#x5229;&#x7528;sql&#x6765;&#x6267;&#x884C;&#x3002;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">String sql = <span class="string">&quot;insert into &quot;</span> + TAB_PERSON + <span class="string">&quot; values (?,&apos;test&apos;,&apos;1&apos;);&quot;</span>;</div><div class="line"><span class="keyword">try</span> {</div><div class="line">    getWritableDatabase().beginTransaction();</div><div class="line">    SQLiteStatement sqLiteStatement = getReadableDatabase().compileStatement(sql);</div><div class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</div><div class="line">    <span class="keyword">while</span> (count &lt; <span class="number">100</span>) {</div><div class="line">        count++;</div><div class="line">        sqLiteStatement.clearBindings();</div><div class="line">        sqLiteStatement.bindLong(<span class="number">1</span>, count);</div><div class="line">        sqLiteStatement.executeInsert();</div><div class="line">    }</div><div class="line">    getWritableDatabase().setTransactionSuccessful();</div><div class="line">} <span class="keyword">catch</span> (Exception e) {</div><div class="line">    e.printStackTrace();</div><div class="line">} <span class="keyword">finally</span> {</div><div class="line">    getWritableDatabase().endTransaction();</div><div class="line">}</div></pre></td></tr></table></figure>
+<p>&#x6CE8;&#x610F;&#xFF1A;&#x6709;&#x4E24;&#x70B9;&#x53EF;&#x4EE5;&#x4F18;&#x5316;db&#x7684;&#x6267;&#x884C;&#x6548;&#x7387;&#x7684;&#xFF0C;&#x4E00;&#x662F;&#x624B;&#x52A8;&#x6267;&#x884C;&#x4E8B;&#x52A1;&#x64CD;&#x4F5C;&#xFF0C;&#x4E8C;&#x662F;&#x5229;&#x7528;SQLiteStatement&#x9884;&#x5904;&#x7406;&#xFF0C;&#x6233;&#x8FD9;&#x91CC;<a href="http://www.jianshu.com/p/c942d5d9cf2e" target="_blank" rel="external">http://www.jianshu.com/p/c942d5d9cf2e</a></p>
+<p><strong>(2) Retrieve(&#x8BFB;&#x53D6;)</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> User <span class="title">selectById</span><span class="params">(<span class="keyword">int</span> userId)</span> </span>{</div><div class="line">    <span class="keyword">final</span> SQLiteDatabase db = mHelper.getReadableDatabase();</div><div class="line">    <span class="keyword">final</span> String selection = DBContract.UserEntity.COLUMN_NAME_UESR_ID + <span class="string">&quot;=?&quot;</span>;</div><div class="line">    <span class="keyword">final</span> String[] selectionArgs = <span class="keyword">new</span> String[]{String.valueOf(userId)};</div><div class="line"></div><div class="line">    Cursor cursor = db.query(DBContract.UserEntity.TABLE_NAME, <span class="keyword">null</span>, selection, selectionArgs, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</div><div class="line">    cursor.moveToFirst();</div><div class="line">    User user = <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">while</span> (cursor.moveToNext()) {</div><div class="line">        <span class="keyword">int</span> _id = cursor.getInt(cursor.getColumnIndex(DBContract.UserEntity.COLUMN_NAME_UESR_ID));</div><div class="line">        String name = cursor.getString(cursor.getColumnIndex(DBContract.UserEntity.COLUMN_NAME_USER_NAME));</div><div class="line">        <span class="keyword">int</span> age = cursor.getInt(cursor.getColumnIndex(DBContract.UserEntity.COLUMN_NAME_USER_AGE));</div><div class="line">            user = <span class="keyword">new</span> User(_id, name, age);</div><div class="line">        }</div><div class="line">        cursor.close();</div><div class="line">        db.close();</div><div class="line">        <span class="keyword">return</span> user;</div><div class="line">}</div><div class="line"></div><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> List&lt;User&gt; <span class="title">selectAll</span><span class="params">()</span> </span>{</div><div class="line">    <span class="keyword">final</span> SQLiteDatabase db = mHelper.getReadableDatabase();</div><div class="line">    List&lt;User&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line">    Cursor cursor = db.query(DBContract.UserEntity.TABLE_NAME, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, DBContract.UserEntity.COLUMN_NAME_UESR_ID);</div><div class="line">    cursor.moveToFirst();</div><div class="line">    <span class="keyword">while</span> (!cursor.isAfterLast()) {</div><div class="line">        <span class="keyword">int</span> _id = cursor.getInt(cursor.getColumnIndex(DBContract.UserEntity.COLUMN_NAME_UESR_ID));</div><div class="line">        String name = cursor.getString(cursor.getColumnIndex(DBContract.UserEntity.COLUMN_NAME_USER_NAME));</div><div class="line">        <span class="keyword">int</span> age = cursor.getInt(cursor.getColumnIndex(DBContract.UserEntity.COLUMN_NAME_USER_AGE));</div><div class="line">        list.add(<span class="keyword">new</span> User(_id, name, age));</div><div class="line">        cursor.moveToNext();</div><div class="line">    }</div><div class="line">    cursor.close();</div><div class="line">    db.close();</div><div class="line">    <span class="keyword">return</span> list;</div><div class="line">}</div></pre></td></tr></table></figure>
+<p><strong>(3) Update(&#x4FEE;&#x6539;)</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">update</span><span class="params">(<span class="keyword">int</span> userId, User user)</span> </span>{</div><div class="line">    <span class="keyword">final</span> SQLiteDatabase db = mHelper.getWritableDatabase();</div><div class="line">    <span class="keyword">final</span> String selection = DBContract.UserEntity.COLUMN_NAME_UESR_ID + <span class="string">&quot;=?&quot;</span>;</div><div class="line">    <span class="keyword">final</span> String[] selectionArgs = <span class="keyword">new</span> String[]{String.valueOf(userId)};</div><div class="line"></div><div class="line">    ContentValues values = <span class="keyword">new</span> ContentValues();</div><div class="line">    <span class="keyword">if</span> (!TextUtils.isEmpty(user.getName())) values.put(DBContract.UserEntity.COLUMN_NAME_USER_NAME, user.getName());</div><div class="line">    <span class="keyword">if</span> (user.getAge() != <span class="number">0</span>) values.put(DBContract.UserEntity.COLUMN_NAME_USER_AGE, user.getAge());</div><div class="line"></div><div class="line">    Cursor query = mHelper.getReadableDatabase().query(DBContract.UserEntity.TABLE_NAME, <span class="keyword">null</span>, selection, selectionArgs, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</div><div class="line">    <span class="keyword">int</span> _id = <span class="number">0</span>;</div><div class="line">    <span class="keyword">if</span> (query.getCount() &gt; <span class="number">0</span>) {</div><div class="line">        _id = db.update(DBContract.UserEntity.TABLE_NAME, values, selection, selectionArgs);</div><div class="line">    }</div><div class="line">    query.close();</div><div class="line">    db.close();</div><div class="line">    <span class="keyword">return</span> _id &gt; <span class="number">0</span>;</div><div class="line">}</div></pre></td></tr></table></figure>
+<p><strong>(4) Delete(&#x5220;&#x9664;)</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">delete</span><span class="params">(<span class="keyword">int</span> userId)</span> </span>{</div><div class="line">    <span class="keyword">final</span> SQLiteDatabase db = mHelper.getWritableDatabase();</div><div class="line">    <span class="keyword">final</span> String selection = DBContract.UserEntity.COLUMN_NAME_UESR_ID + <span class="string">&quot;=?&quot;</span>;</div><div class="line">    <span class="keyword">final</span> String[] selectionArgs = <span class="keyword">new</span> String[]{String.valueOf(userId)};</div><div class="line">    Cursor query = mHelper.getReadableDatabase().query(DBContract.UserEntity.TABLE_NAME, <span class="keyword">null</span>, selection, selectionArgs, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</div><div class="line">    <span class="keyword">int</span> _id = <span class="number">0</span>;</div><div class="line">    <span class="keyword">if</span> (query.getCount() &gt; <span class="number">0</span>) {</div><div class="line">        _id = db.delete(DBContract.UserEntity.TABLE_NAME, selection, selectionArgs);</div><div class="line">    }</div><div class="line">    query.close();</div><div class="line">    db.close();</div><div class="line">    <span class="keyword">return</span> _id &gt; <span class="number">0</span>;</div><div class="line">}</div></pre></td></tr></table></figure>
+<p>&#x603B;&#x7ED3;&#xFF1A;SQLite&#x5728;&#x6570;&#x636E;&#x5B58;&#x50A8;&#x65B9;&#x9762;&#x6709;&#x7740;&#x5176;&#x72EC;&#x7279;&#x7684;&#x65B9;&#x5F0F;&#xFF0C;&#x8F7B;&#x4FBF;&#x3001;&#x9AD8;&#x6548;&#x7B49;&#x7B49;&#x90FD;&#x662F;&#x5B83;&#x7684;&#x7279;&#x70B9;&#xFF0C;&#x5728;&#x5F00;&#x53D1;&#x4E2D;&#x5176;api&#x4E5F;&#x5F88;&#x53CB;&#x597D;&#xFF0C;&#x662F;&#x6570;&#x636E;&#x6301;&#x4E45;&#x5316;&#x7684;&#x597D;&#x5E2E;&#x624B;&#xFF0C;&#x5E0C;&#x671B;&#x672C;&#x6587;&#x5BF9;&#x60A8;&#x5E73;&#x65F6;&#x7684;&#x5F00;&#x53D1;&#x6709;&#x6240;&#x5E2E;&#x52A9;&#x3002;</p>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/SQLite/">SQLite</a>
+  </div>
+
+</div>
+
+	<div class="article-share" id="share">
+	
+	<div class="share-jiathis">
+	  <div class="jiathis_style_24x24">
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_googleplus"></a>
+	<a class="jiathis_button_douban"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+    var jiathis_config={
+    data_track_clickback:true,
+    sm:"copy,renren,cqq",
+    pic:"",
+    summary:"",
+     ralateuid:{"tsina":"coder_JL"},hideMore:false}
+    
+  </script> 
+<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=
+2141709" charset="utf-8"></script>
+	 </div>
+	
+	</div>
+
+
+</footer>   	       
+	</article>
+	<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/02/22/Android自学路线/" title="Android自学路线">
+  <strong>上一篇：</strong><br>
+  <span>
+  Android自学路线</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/02/16/见贤思齐/" title="见贤思齐">
+ <strong>下一篇：</strong><br> 
+ <span>见贤思齐
+</span>
+</a>
+</div>
+
+</nav>
+	
+</div>
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是SQLite？"><span class="toc-number">1.</span> <span class="toc-text">什么是SQLite？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么要用-SQLite？"><span class="toc-number">2.</span> <span class="toc-text">为什么要用 SQLite？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SQLite支持的数据类型"><span class="toc-number">3.</span> <span class="toc-text">SQLite支持的数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SQLite的优点"><span class="toc-number">4.</span> <span class="toc-text">SQLite的优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SQLite的缺点"><span class="toc-number">5.</span> <span class="toc-text">SQLite的缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#何时应该使用SQLite"><span class="toc-number">6.</span> <span class="toc-text">何时应该使用SQLite</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#何时不应该使用SQLite"><span class="toc-number">7.</span> <span class="toc-text">何时不应该使用SQLite</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="flemingme" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js"></script>
+</div>
+
+  
+
+  <div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Dialog/" title="Dialog">Dialog<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LruCache/" title="LruCache">LruCache<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Eclipse-ADT/" title="Eclipse ADT">Eclipse ADT<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android-Studio/" title="Android Studio">Android Studio<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/BroadcastReceiver/" title="BroadcastReceiver">BroadcastReceiver<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Git/" title="Git">Git<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/EditText/" title="EditText">EditText<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQLite/" title="SQLite">SQLite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MVP/" title="MVP">MVP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/AsycTask/" title="AsycTask">AsycTask<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Handler/" title="Handler">Handler<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Message/" title="Message">Message<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://www.oschina.net/android" target="_blank" title="Androdi开发专区">Androdi开发专区</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://stormzhang.com" target="_blank" title="stormzhang">stormzhang</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://pengtao.me" target="_blank" title="CPPAlien">CPPAlien</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuxiaolong.me" target="_blank" title="吴小龙同學">吴小龙同學</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://andyleeblog.cn" target="_blank" title="Andy">Andy</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://lawaias.github.io" target="_blank" title="LawAias">LawAias</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.yumez.cn" target="_blank" title="yuez">yuez</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://kotliner.cn" target="_blank" title="Kotlin">Kotlin</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">新浪微博</p>
+    <iframe width="100%" height="119" class="share_self" frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=null&verifier=&dpc=1"></iframe>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/flemingme" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		<a href="https://twitter.com/fleming_chen" target="_blank" class="icon-twitter" title="twitter"></a>
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/flemingchen" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:jialongchen5@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="Fleming Chen">Fleming Chen</a>
+		
+		
+		</p>
+</div></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+  </body>

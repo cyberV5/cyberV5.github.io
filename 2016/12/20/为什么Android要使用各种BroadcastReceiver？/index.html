@@ -1,0 +1,546 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>为什么Android要使用各种BroadcastReceiver？ | Fleming&#39;s blog</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Fleming Chen">
+    
+
+    
+    <meta name="description" content="&amp;#x4F5C;&amp;#x4E3A;Android&amp;#x56DB;&amp;#x5927;&amp;#x7EC4;&amp;#x4EF6;&amp;#x4E4B;&amp;#x4E00;&amp;#x7684;BroadcastReceiver&amp;#xFF08;&amp;#x5E7F;&amp;#x64AD;&amp;#x63A5;&amp;#x6536;&amp;#x8005;&amp;#xFF09;&amp;#xFF0C;&amp;#x540C;Activity&amp;#xFF08;&amp;#x6D3B;&amp;#x52A8;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="为什么Android要使用各种BroadcastReceiver？">
+<meta property="og:url" content="https://flemingme.github.io/2016/12/20/为什么Android要使用各种BroadcastReceiver？/index.html">
+<meta property="og:site_name" content="Fleming's blog">
+<meta property="og:description" content="&amp;#x4F5C;&amp;#x4E3A;Android&amp;#x56DB;&amp;#x5927;&amp;#x7EC4;&amp;#x4EF6;&amp;#x4E4B;&amp;#x4E00;&amp;#x7684;BroadcastReceiver&amp;#xFF08;&amp;#x5E7F;&amp;#x64AD;&amp;#x63A5;&amp;#x6536;&amp;#x8005;&amp;#xFF09;&amp;#xFF0C;&amp;#x540C;Activity&amp;#xFF08;&amp;#x6D3B;&amp;#x52A8;">
+<meta property="og:updated_time" content="2017-02-13T09:59:31.059Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="为什么Android要使用各种BroadcastReceiver？">
+<meta name="twitter:description" content="&amp;#x4F5C;&amp;#x4E3A;Android&amp;#x56DB;&amp;#x5927;&amp;#x7EC4;&amp;#x4EF6;&amp;#x4E4B;&amp;#x4E00;&amp;#x7684;BroadcastReceiver&amp;#xFF08;&amp;#x5E7F;&amp;#x64AD;&amp;#x63A5;&amp;#x6536;&amp;#x8005;&amp;#xFF09;&amp;#xFF0C;&amp;#x540C;Activity&amp;#xFF08;&amp;#x6D3B;&amp;#x52A8;">
+<meta name="twitter:creator" content="@fleming_chen">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Fleming&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head></html>
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Fleming&#39;s blog" title="Fleming&#39;s blog"></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Fleming&#39;s blog">Fleming&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">文章</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:flemingme.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/12/20/为什么Android要使用各种BroadcastReceiver？/" title="为什么Android要使用各种BroadcastReceiver？" itemprop="url">为什么Android要使用各种BroadcastReceiver？</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Fleming Chen" target="_blank" itemprop="author">Fleming Chen</a>
+		
+  </p><p class="article-time">
+    <time datetime="2016-12-20T05:58:20.000Z" itemprop="datePublished"> 发表于 2016-12-20</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>&#x4F5C;&#x4E3A;Android&#x56DB;&#x5927;&#x7EC4;&#x4EF6;&#x4E4B;&#x4E00;&#x7684;BroadcastReceiver&#xFF08;&#x5E7F;&#x64AD;&#x63A5;&#x6536;&#x8005;&#xFF09;&#xFF0C;&#x540C;Activity&#xFF08;&#x6D3B;&#x52A8;&#xFF09;&#x4E00;&#x6837;&#xFF0C;&#x7ECF;&#x5E38;&#x88AB;&#x5927;&#x5BB6;&#x7528;&#x5230;&#xFF0C;&#x7F51;&#x4E0A;&#x4E5F;&#x662F;&#x4E00;&#x5806;&#x5BF9;&#x5B83;&#x7684;&#x8BB2;&#x89E3;&#xFF0C;&#x90A3;&#x4E48;&#x4E3A;&#x4EC0;&#x4E48;Android&#x8981;&#x7528;&#x5E7F;&#x64AD;&#x63A5;&#x6536;&#x8005;&#x8FD9;&#x79CD;&#x673A;&#x5236;&#x5462;&#xFF1F;</p>
+<p>&#x5E7F;&#x64AD;&#x5206;&#x4E3A;&#xFF1A;&#x666E;&#x901A;&#x5E7F;&#x64AD;&#x548C;&#x6709;&#x5E8F;&#x5E7F;&#x64AD;</p>
+<p>1.<strong>Normal broadcasts</strong>&#xFF08;&#x666E;&#x901A;&#x5E7F;&#x64AD;&#xFF09;&#xFF1A;Normal broadcasts&#x662F;&#x5B8C;&#x5168;&#x5F02;&#x6B65;&#x7684;&#x53EF;&#x4EE5;&#x540C;&#x4E00;&#x65F6;&#x95F4;&#x88AB;&#x6240;&#x6709;&#x7684;&#x63A5;&#x6536;&#x8005;&#x63A5;&#x6536;&#x5230;&#x3002;&#x6D88;&#x606F;&#x7684;&#x4F20;&#x9012;&#x6548;&#x7387;&#x6BD4;&#x8F83;&#x9AD8;&#x3002;&#x4F46;&#x7F3A;&#x70B9;&#x662F;&#x63A5;&#x6536;&#x8005;&#x4E0D;&#x80FD;&#x5C06;&#x63A5;&#x6536;&#x7684;&#x6D88;&#x606F;&#x7684;&#x5904;&#x7406;&#x4FE1;&#x606F;&#x4F20;&#x9012;&#x7ED9;&#x4E0B;&#x4E00;&#x4E2A;&#x63A5;&#x6536;&#x8005;&#x4E5F;&#x4E0D;&#x80FD;&#x505C;&#x6B62;&#x6D88;&#x606F;&#x7684;&#x4F20;&#x64AD;&#x3002;&#x53EF;&#x4EE5;&#x5229;&#x7528;Context.sendBroadcast&#x53D1;&#x9001;&#x3002;</p>
+<p>2.<strong>Ordered broadcasts</strong>&#xFF08;&#x6709;&#x5E8F;&#x5E7F;&#x64AD;&#xFF09;&#xFF1A;Ordered broadcasts&#x7684;&#x63A5;&#x6536;&#x8005;&#x6309;&#x7167;&#x4E00;&#x5B9A;&#x7684;&#x4F18;&#x5148;&#x7EA7;&#x8FDB;&#x884C;&#x6D88;&#x606F;&#x7684;&#x63A5;&#x6536;&#x3002;&#x4E00;&#x6B21;&#x4F20;&#x9001;&#x5230;&#x4E00;&#x4E2A;&#x63A5;&#x6536;&#x5668;&#x3002; &#x968F;&#x7740;&#x6BCF;&#x4E2A;&#x63A5;&#x6536;&#x5668;&#x4F9D;&#x6B21;&#x6267;&#x884C;&#xFF0C;&#x5B83;&#x53EF;&#x4EE5;&#x5C06;&#x7ED3;&#x679C;&#x4F20;&#x64AD;&#x5230;&#x4E0B;&#x4E00;&#x4E2A;&#x63A5;&#x6536;&#x5668;&#xFF0C;&#x6216;&#x8005;&#x5B83;&#x53EF;&#x4EE5;&#x5B8C;&#x5168;&#x4E2D;&#x6B62;&#x5E7F;&#x64AD;&#xFF0C;&#x4F7F;&#x5F97;&#x5B83;&#x4E0D;&#x4F1A;&#x88AB;&#x4F20;&#x9012;&#x5230;&#x5176;&#x4ED6;&#x63A5;&#x6536;&#x5668;&#x3002; &#x547D;&#x4EE4;&#x63A5;&#x6536;&#x5668;&#x8FD0;&#x884C;&#x53EF;&#x4EE5;&#x7528;&#x5339;&#x914D;&#x7684;&#x610F;&#x56FE;&#x8FC7;&#x6EE4;&#x5668;&#x7684;<code>android:priority</code>&#x5C5E;&#x6027;&#x63A7;&#x5236;; &#x5177;&#x6709;&#x76F8;&#x540C;&#x4F18;&#x5148;&#x7EA7;&#x7684;&#x63A5;&#x6536;&#x5668;&#x5C06;&#x4EE5;&#x4EFB;&#x610F;&#x987A;&#x5E8F;&#x8FD0;&#x884C;&#x3002;&#x53EF;&#x4EE5;&#x5229;&#x7528;Context.sendOrderedBroadcast&#x53D1;&#x9001;&#x3002;</p>
+<a id="more"></a>
+<p>&#x5B98;&#x7F51;&#x4E0A;&#x4ECB;&#x7ECD;&#x5E7F;&#x64AD;&#x662F;&#x7528;&#x7684;&#x76D1;&#x542C;&#x7CFB;&#x7EDF;&#x7F51;&#x7EDC;&#x72B6;&#x51B5;&#x7684;&#x4F8B;&#x5B50;&#xFF0C;&#x5176;&#x5B9E;&#x5173;&#x952E;&#x5B57;&#x5728;&#x4E8E;&#x201C;&#x76D1;&#x542C;&#x201D;&#x3002;</p>
+<p>(1) &#x521B;&#x5EFA;&#x5E7F;&#x64AD;&#x63A5;&#x6536;&#x8005;</p>
+<p>BroadcastReceiver&#x662F;&#x4E00;&#x4E2A;&#x62BD;&#x8C61;&#x7C7B;&#xFF0C;&#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x8981;&#x521B;&#x5EFA;&#x81EA;&#x5DF1;&#x7684;&#x5E7F;&#x64AD;&#x63A5;&#x6536;&#x8005;&#x5C31;&#x8981;&#x7EE7;&#x627F;&#x5B83;&#xFF0C;&#x7EE7;&#x627F;&#x540E;&#x4F1A;&#x6709;&#x63D0;&#x793A;&#x91CD;&#x5199;onReceive&#x65B9;&#x6CD5;&#x3002;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NetworkBroadcastReceiver</span> <span class="keyword">extends</span> <span class="title">BroadcastReceiver</span> </span>{</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onReceive</span><span class="params">(Context context, Intent intent)</span> </span>{</div><div class="line">       <span class="keyword">if</span> (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {</div><div class="line">            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);</div><div class="line">            NetworkInfo activeNetwork = manager.getActiveNetworkInfo();</div><div class="line">            <span class="keyword">if</span> (activeNetwork != <span class="keyword">null</span> &amp;&amp; activeNetwork.isAvailable()) {</div><div class="line">                Toast.makeText(context, <span class="string">&quot;&#x6709;&#x7F51;&#x7EDC;&#x8FDE;&#x63A5;&quot;</span>, Toast.LENGTH_SHORT).show();</div><div class="line">            } <span class="keyword">else</span> {</div><div class="line">              	Toast.makeText(context, <span class="string">&quot;&#x65E0;&#x7F51;&#x7EDC;&#x8FDE;&#x63A5;&quot;</span>, Toast.LENGTH_SHORT).show();</div><div class="line">            }</div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+<p>&#x5E7F;&#x64AD;&#x63A5;&#x6536;&#x8005;&#x7684;&#x751F;&#x547D;&#x5468;&#x671F;&#x662F;&#x4ECE;&#x63A5;&#x6536;&#x5E7F;&#x64AD;&#x5F00;&#x59CB;&#xFF0C;&#x5230;onRecevier&#x65B9;&#x6CD5;&#x6267;&#x884C;&#x5B8C;&#x6210;&#x7ED3;&#x675F;&#xFF0C;&#x65F6;&#x95F4;&#x5F88;&#x77ED;&#xFF0C;&#x4E00;&#x822C;&#x4E0D;&#x5141;&#x8BB8;&#x5904;&#x7406;&#x5927;&#x6279;&#x91CF;&#x8017;&#x65F6;&#x64CD;&#x4F5C;&#x3002;&#x8FD9;&#x91CC;&#x987A;&#x4FBF;&#x7ED9;&#x51FA;&#x6253;&#x5370;NetworkInfo&#x7684;&#x4FE1;&#x606F;&#x4EE5;&#x4F9B;&#x53C2;&#x8003;&#xFF1A;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">NetworkInfo: </div><div class="line">type: WIFI[,type_ext: WIFI],</div><div class="line">state: CONNECTED/CONNECTED,</div><div class="line">reason: (unspecified),</div><div class="line">extra: &quot;TP-LINK_EFE8&quot;,</div><div class="line">roaming: false,</div><div class="line">failover: false,</div><div class="line">isAvailable: true,</div><div class="line">isConnectedToProvisioningNetwork: false,</div><div class="line">isIpv4Connected: true,</div><div class="line">isIpv6Connected: false</div><div class="line"></div><div class="line">[type: MOBILE[LTE],</div><div class="line">state: CONNECTED/CONNECTED,</div><div class="line">reason: connected,</div><div class="line">extra: cmnet,</div><div class="line">roaming: false,</div><div class="line">failover: false,</div><div class="line">isAvailable: true,</div><div class="line">isConnectedToProvisioningNetwork: false]</div></pre></td></tr></table></figure>
+<p>(2) &#x9759;&#x6001;&#x6CE8;&#x518C;&#x5E7F;&#x64AD;</p>
+<p>&#x9759;&#x6001;&#x6CE8;&#x518C;&#x5E7F;&#x64AD;&#xFF0C;&#x9700;&#x8981;&#x5728;AndroidManifest.xml&#x4E2D;&#xFF0C;&#x6DFB;&#x52A0;<recevier> &#x6807;&#x7B7E;&#xFF0C;&#x5C06;&#x5E7F;&#x64AD;&#x63A5;&#x6536;&#x8005;&#x6CE8;&#x518C;&#x5230;&#x5E94;&#x7528;&#x4E2D;&#x3002;&#x8981;&#x6DFB;&#x52A0;&#x8FC7;&#x6EE4;&#x5668;IntentFilter&#xFF0C;&#x7531;&#x4E8E;&#x7CFB;&#x7EDF;&#x7F51;&#x7EDC;&#x53D8;&#x5316;&#x65F6;&#x4F1A;&#x53D1;&#x9001;ConnectivityManager.CONNECTIVITY_ACTION (&#x201C;android.net.conn.CONNECTIVITY_CHANGE&#x201D;)&#x7684;&#x5E7F;&#x64AD;&#xFF0C;&#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x8981;&#x76D1;&#x542C;&#x8FD9;&#x6761;&#x5E7F;&#x64AD;&#x3002;</recevier></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span>=<span class="string">&quot;.NetworkBroadcastReceiver&quot;</span>&gt;</span></div><div class="line">     <span class="tag">&lt;<span class="name">intent-filter</span> <span class="attr">android:priority</span>=<span class="string">&quot;1000&quot;</span>&gt;</span></div><div class="line">          <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">&quot;android.net.conn.CONNECTIVITY_CHANGE&quot;</span>/&gt;</span></div><div class="line">     <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>&#x8FD9;&#x91CC;priority&#x4EE3;&#x8868;&#x7684;&#x662F;&#x6267;&#x884C;&#x987A;&#x5E8F;&#x7684;&#x4F18;&#x5148;&#x7EA7;&#xFF0C;&#x53D6;&#x503C;[-1000,1000]&#xFF0C;&#x540E;&#x9762;&#x7684;&#x6709;&#x5E8F;&#x5E7F;&#x64AD;&#x4F1A;&#x8BB2;&#x5230;&#x3002;</p>
+<p>(3) &#x52A8;&#x6001;&#x6CE8;&#x518C;&#x5E7F;&#x64AD;</p>
+<p>i.&#x610F;&#x56FE;&#x8FC7;&#x6EE4;&#x5668; IntentFilter &#x7528;&#x4E8E;&#x7ED9;BroadcastReceiver&#x7ED1;&#x5B9A;&#x76D1;&#x542C;&#x5E7F;&#x64AD;&#x7C7B;&#x578B;<br>ii.&#x81EA;&#x5B9A;&#x4E49;&#x7684;BroadcastReceiver&#xFF0C;&#x4F8B;&#x5982;&#x4E0A;&#x6587;&#x7684;NetworkChangeBroadcastReceiver<br>iii.&#x6CE8;&#x518C;&#x65B9;&#x6CD5; Context.registerReceiver(Receiver, IntentFilter)<br>iv.&#x53CD;&#x6CE8;&#x518C;&#x65B9;&#x6CD5; unregisterReceiver(Receiver)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">IntentFilter mFilter = <span class="keyword">new</span> IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);</div><div class="line">NetworkChangeBroadcastReceiver mReceiver = <span class="keyword">new</span> NetworkChangeBroadcastReceiver();</div><div class="line">registerReceiver(mReceiver, mFilter);</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>{</div><div class="line">   <span class="keyword">super</span>.onDestroy();</div><div class="line">   unregisterReceiver(mReceiver);</div><div class="line">}</div></pre></td></tr></table></figure>
+<p>&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#x662F;&#x6210;&#x5BF9;&#x51FA;&#x73B0;&#x7684;&#xFF0C;&#x53EF;&#x4EE5;&#x5728;onCreate&#x7684;&#x65F6;&#x5019;&#x6CE8;&#x518C;&#xFF0C;&#x5728;onDestroy&#x7684;&#x65F6;&#x5019;&#x53CD;&#x6CE8;&#x518C;&#xFF0C;&#x4E5F;&#x53EF;&#x4EE5;&#x5728;onResume&#x548C;onPause&#x4E2D;&#x6267;&#x884C;&#x8FD9;&#x5199;&#x65B9;&#x6CD5;&#x3002;&#x4E0D;&#x8FC7;Google API&#x63A8;&#x8350;&#x7684;&#x505A;&#x6CD5;&#xFF0C;&#x5728;activity&#x7684;onResume()&#x4E2D;&#x6CE8;&#x518C;&#xFF0C;&#x5728;onPause()&#x53CD;&#x6CE8;&#x518C;&#x3002;&#x6548;&#x679C;&#x662F;&#x5F53;&#x754C;&#x9762;pause&#x65F6;&#xFF0C;&#x5C31;&#x4E0D;&#x63A5;&#x6536;&#x5E7F;&#x64AD;&#xFF0C;&#x4ECE;&#x800C;&#x51CF;&#x5C11;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x7CFB;&#x7EDF;&#x5F00;&#x9500;&#x3002;&#x8FD8;&#x6709;&#x5C31;&#x662F;&#x4E00;&#x5B9A;&#x8981;&#x4E3B;&#x52A8;&#x53CD;&#x6CE8;&#x518C;&#x4F60;&#x7684;&#x5E7F;&#x64AD;&#xFF0C;&#x5426;&#x5219;&#x4F1A;&#x51FA;&#x73B0;&#x5F02;&#x5E38;&#x3002;</p>
+<p><strong>&#x52A8;&#x6001;&#x6CE8;&#x518C;&#x548C;&#x9759;&#x6001;&#x6CE8;&#x518C;&#x7684;&#x5DEE;&#x522B;&#xFF1A;&#x52A8;&#x6001;&#x6CE8;&#x518C;&#x540E;&#xFF0C;&#x5E7F;&#x64AD;&#x63A5;&#x6536;&#x8005;&#x4F1A;&#x4F9D;&#x8D56;Activity&#x7684;&#x751F;&#x547D;&#x5468;&#x671F;&#xFF0C;&#x800C;&#x9759;&#x6001;&#x6CE8;&#x518C;&#x7684;&#x5E7F;&#x64AD;&#x4E0D;&#x4F1A;&#xFF0C;&#x53EA;&#x8981;&#x662F;&#x7CFB;&#x7EDF;&#x6709;&#x53D1;&#x51FA;&#x7684;&#x5E7F;&#x64AD;&#xFF0C;&#x5B83;&#x90FD;&#x4F1A;&#x63A5;&#x6536;&#xFF0C;&#x4E0E;&#x7A0B;&#x5E8F;&#x662F;&#x5426;&#x542F;&#x52A8;&#x65E0;&#x5173;&#x3002;</strong></p>
+<p>(4) &#x53D1;&#x9001;&#x5E7F;&#x64AD;</p>
+<p>&#x5177;&#x4F53;&#x4F7F;&#x7528;&#x7684;&#x65B9;&#x6CD5;&#x662F;sendBroadcast(Intent intent)&#xFF0C;&#x901A;&#x8FC7;&#x9690;&#x5F0F;&#x8C03;&#x7528;&#x5C31;&#x53EF;&#x4EE5;&#xFF0C;&#x6CE8;&#x610F;action&#x662F;&#x4F60;&#x81EA;&#x5B9A;&#x4E49;&#x7684;&#xFF0C;&#x610F;&#x601D;&#x5C31;&#x662F;&#x4E0D;&#x53EF;&#x4EE5;&#x53D1;&#x9001;&#x7CFB;&#x7EDF;&#x5E7F;&#x64AD;&#xFF0C;&#x6211;&#x8BD5;&#x4E86;&#xFF0C;&#x76F4;&#x63A5;&#x5C31;&#x5D29;&#x4E86;&#x3002;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Intent intent = <span class="keyword">new</span> Intent();</div><div class="line">intent.setAction(<span class="string">&quot;com.fleming.chen.mybroadcast&quot;</span>);</div><div class="line">sendBroadcast(intent);</div></pre></td></tr></table></figure>
+<p>&#x9488;&#x5BF9;(3)(4)&#x4E24;&#x70B9;&#xFF0C;&#x5982;&#x679C;&#x4F60;&#x8981;&#x7528;&#x5230;&#x7684;&#x5E7F;&#x64AD;&#x4EC5;&#x4EC5;&#x662F;&#x5E94;&#x7528;&#x91CC;&#x7684;&#xFF0C;&#x90A3;&#x4E48;&#x4F60;&#x53EF;&#x4EE5;&#x7528;LocalBroadcastManager&#x8FD9;&#x4E2A;&#x7C7B;&#xFF0C;&#x5B83;&#x4E0E;&#x4E0A;&#x8FF0;&#x63CF;&#x8FF0;&#x4E2D;&#x7684;&#x533A;&#x522B;&#x5728;&#x4E8E;&#xFF1A;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">LocalBroadcastManager.getInstance(context).registerReceiver(mReceiver, mFilter);</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">LocalBroadcastManager.getInstance(context).unregisterReceiver(mReceiver);</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">LocalBroadcastManager.getInstance(context).sendBroadcast(intent);</div></pre></td></tr></table></figure>
+<p>&#x901A;&#x8FC7;sendBroadcast&#x53D1;&#x9001;&#x7684;&#x5E7F;&#x64AD;&#xFF0C;&#x4E0D;&#x4F1A;&#x88AB;&#x901A;&#x8FC7;LocalBroadcastManager&#x7C7B;&#x6CE8;&#x518C;&#x7684;&#x5E7F;&#x64AD;&#x63A5;&#x6536;&#x8005;&#x63A5;&#x6536;&#xFF0C;&#x53CD;&#x4E4B;&#x4E5F;&#x662F;&#x5982;&#x6B64;&#xFF0C;&#x4E24;&#x8005;&#x662F;&#x4E0D;&#x53EF;&#x4EE5;&#x201D;&#x4E92;&#x901A;&#x53CB;&#x8C0A;&#x201C;&#x7684;&#xFF0C;&#x63A8;&#x8350;&#x4F7F;&#x7528;LocalBroadcastManager&#x6765;&#x7BA1;&#x7406;&#x5E7F;&#x64AD;&#x3002;</p>
+<p>(5) &#x53D1;&#x9001;&#x6709;&#x5E8F;&#x5E7F;&#x64AD;</p>
+<p>&#x4E0A;&#x9762;&#x8BB2;&#x4E86;&#x90A3;&#x4E48;&#x591A;&#x90FD;&#x662F;&#x666E;&#x901A;&#x5E7F;&#x64AD;&#xFF0C;&#x90A3;&#x4EC0;&#x4E48;&#x53C8;&#x662F;&#x6709;&#x5E8F;&#x5E7F;&#x64AD;&#x5462;&#xFF1F;</p>
+<p>&#x6709;&#x5E8F;&#x5E7F;&#x64AD;&#x5173;&#x952E;&#x5728;&#x4E8E;&#x8FD9;&#x7C7B;&#x5E7F;&#x64AD;&#x662F;&#x6709;&#x5E8F;&#x7684;&#xFF0C;&#x4E0A;&#x6587;&#x4E2D;&#x63D0;&#x5230;priority&#xFF0C;&#x8FD9;&#x662F;IntentFilter&#x7684;&#x5C5E;&#x6027;&#xFF0C;&#x7528;&#x6765;&#x8BA9;&#x4E0D;&#x540C;&#x7684;&#x5E7F;&#x64AD;&#x62E5;&#x6709;&#x4E0D;&#x540C;&#x7684;&#x6267;&#x884C;&#x987A;&#x5E8F;&#xFF0C;&#x5373;&#x4F18;&#x5148;&#x7EA7;&#x4E0D;&#x540C;&#x3002;</p>
+<p>&#x5B9A;&#x4E49;&#x4E09;&#x79CD;&#x4E0D;&#x540C;&#x4F18;&#x5148;&#x7EA7;&#x7684;&#x5E7F;&#x64AD;&#x63A5;&#x6536;&#x8005;&#xFF1A;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyBroadcastReceiver</span> <span class="keyword">extends</span> <span class="title">BroadcastReceiver</span> </span>{</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onReceive</span><span class="params">(Context context, Intent intent)</span> </span>{</div><div class="line">        <span class="keyword">if</span> (intent.getAction().equals(<span class="string">&quot;com.fleming.chen.myreceiver&quot;</span>)) {</div><div class="line">            String message = getResultData();</div><div class="line">            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();</div><div class="line">            setResultData(<span class="string">&quot;&#x8FD9;&#x662F;&#x4FEE;&#x6539;&#x540E;&#x7684;&#x6570;&#x636E;&quot;</span>);<span class="comment">//&#x7B2C;&#x4E00;&#x4E2A;&#x63A5;&#x6536;&#x540E;&#x5904;&#x7406;&#x4E00;&#x4E0B;&#xFF0C;&#x518D;&#x4EA4;&#x7ED9;&#x4E0B;&#x4E00;&#x4E2A;</span></div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyBroadcastReceiver2</span> <span class="keyword">extends</span> <span class="title">BroadcastReceiver</span> </span>{</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onReceive</span><span class="params">(Context context, Intent intent)</span> </span>{</div><div class="line">        <span class="keyword">if</span> (intent.getAction().equals(<span class="string">&quot;com.fleming.chen.myreceiver&quot;</span>)) {</div><div class="line">            String message = getResultData();<span class="comment">//&#x5F97;&#x5230;&#x4E0A;&#x4E00;&#x4E2A;&#x7684;&#x5904;&#x7406;&#x7ED3;&#x679C;</span></div><div class="line">            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();</div><div class="line">            abortBroadcast();<span class="comment">//&#x4E3B;&#x52A8;&#x505C;&#x6B62;&#x5E7F;&#x64AD;&#xFF0C;&#x4E0D;&#x518D;&#x7EE7;&#x7EED;&#x4F20;&#x4E0B;&#x53BB;</span></div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyBroadcastReceiver3</span> <span class="keyword">extends</span> <span class="title">BroadcastReceiver</span> </span>{</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onReceive</span><span class="params">(Context context, Intent intent)</span> </span>{</div><div class="line">        <span class="keyword">if</span> (intent.getAction().equals(<span class="string">&quot;com.fleming.chen.myreceiver&quot;</span>)) {</div><div class="line">          	<span class="comment">//&#x6B64;&#x65F6;&#x867D;&#x7136;&#x8BE5;&#x5E7F;&#x64AD;&#x63A5;&#x6536;&#x8005;&#x4E5F;&#x76D1;&#x542C;&#x4E86;&#xFF0C;&#x4E0D;&#x8FC7;&#x4E5F;&#x6CA1;&#x6709;&#x5185;&#x5BB9;</span></div><div class="line">            Toast.makeText(context, getResultData(), Toast.LENGTH_SHORT).show();</div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span>=<span class="string">&quot;.MyBroadcastReceiver&quot;</span> &gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">intent-filter</span> <span class="attr">android:priority</span>=<span class="string">&quot;1000&quot;</span>&gt;</span></div><div class="line">          <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">&quot;com.fleming.chen.myreceiver&quot;</span>/&gt;</span></div><div class="line">      <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span>=<span class="string">&quot;.MyBroadcastReceiver2&quot;</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">intent-filter</span> <span class="attr">android:priority</span>=<span class="string">&quot;0&quot;</span>&gt;</span></div><div class="line">          <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">&quot;com.fleming.chen.myreceiver&quot;</span>/&gt;</span></div><div class="line">      <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span>=<span class="string">&quot;.MyBroadcastReceiver3&quot;</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">intent-filter</span> <span class="attr">android:priority</span>=<span class="string">&quot;-1000&quot;</span>&gt;</span></div><div class="line">          <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">&quot;com.fleming.chen.myreceiver&quot;</span>/&gt;</span></div><div class="line">      <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Intent intent = <span class="keyword">new</span> Intent();</div><div class="line">intent.setAction(<span class="string">&quot;com.fleming.chen.myreceiver&quot;</span>);</div><div class="line">sendOrderedBroadcast(intent, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="number">0</span>, <span class="string">&quot;&#x8FD9;&#x662F;&#x521D;&#x59CB;&#x7684;&#x6570;&#x636E;&quot;</span>, <span class="keyword">null</span>);</div></pre></td></tr></table></figure>
+<p>&#x5BF9;&#x4E8E;&#x5E7F;&#x64AD;&#x7684;&#x5185;&#x5BB9;&#xFF0C;&#x5728;Android 7.0&#x4E0A;&#x505A;&#x4E86;&#x4FEE;&#x6539;&#xFF0C;&#x5373;Project Svelte&#xFF1A;&#x540E;&#x53F0;&#x4F18;&#x5316;</p>
+<p>Android 7.0 &#x79FB;&#x9664;&#x4E86;&#x4E09;&#x9879;&#x9690;&#x5F0F;&#x5E7F;&#x64AD;&#xFF0C;&#x4EE5;&#x5E2E;&#x52A9;&#x4F18;&#x5316;&#x5185;&#x5B58;&#x4F7F;&#x7528;&#x548C;&#x7535;&#x91CF;&#x6D88;&#x8017;&#x3002;&#x6B64;&#x9879;&#x53D8;&#x66F4;&#x5F88;&#x6709;&#x5FC5;&#x8981;&#xFF0C;&#x56E0;&#x4E3A;&#x9690;&#x5F0F;&#x5E7F;&#x64AD;&#x4F1A;&#x5728;&#x540E;&#x53F0;&#x9891;&#x7E41;&#x542F;&#x52A8;&#x5DF2;&#x6CE8;&#x518C;&#x4FA6;&#x542C;&#x8FD9;&#x4E9B;&#x5E7F;&#x64AD;&#x7684;&#x5E94;&#x7528;&#x3002;&#x5220;&#x9664;&#x8FD9;&#x4E9B;&#x5E7F;&#x64AD;&#x53EF;&#x4EE5;&#x663E;&#x8457;&#x63D0;&#x5347;&#x8BBE;&#x5907;&#x6027;&#x80FD;&#x548C;&#x7528;&#x6237;&#x4F53;&#x9A8C;&#x3002;</p>
+<p>&#x79FB;&#x52A8;&#x8BBE;&#x5907;&#x4F1A;&#x7ECF;&#x5386;&#x9891;&#x7E41;&#x7684;&#x8FDE;&#x63A5;&#x53D8;&#x66F4;&#xFF0C;&#x4F8B;&#x5982;&#x5728; WLAN &#x548C;&#x79FB;&#x52A8;&#x6570;&#x636E;&#x4E4B;&#x95F4;&#x5207;&#x6362;&#x65F6;&#x3002;&#x76EE;&#x524D;&#xFF0C;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x5728;&#x5E94;&#x7528;&#x6E05;&#x5355;&#x4E2D;&#x6CE8;&#x518C;&#x4E00;&#x4E2A;&#x63A5;&#x6536;&#x5668;&#x6765;&#x4FA6;&#x542C;&#x9690;&#x5F0F; <code>CONNECTIVITY_ACTION</code> &#x5E7F;&#x64AD;&#xFF0C;&#x8BA9;&#x5E94;&#x7528;&#x80FD;&#x591F;&#x76D1;&#x63A7;&#x8FD9;&#x4E9B;&#x53D8;&#x66F4;&#x3002;&#x7531;&#x4E8E;&#x5F88;&#x591A;&#x5E94;&#x7528;&#x4F1A;&#x6CE8;&#x518C;&#x63A5;&#x6536;&#x6B64;&#x5E7F;&#x64AD;&#xFF0C;&#x56E0;&#x6B64;&#x5355;&#x6B21;&#x7F51;&#x7EDC;&#x5207;&#x6362;&#x5373;&#x4F1A;&#x5BFC;&#x81F4;&#x6240;&#x6709;&#x5E94;&#x7528;&#x88AB;&#x5524;&#x9192;&#x5E76;&#x540C;&#x65F6;&#x5904;&#x7406;&#x6B64;&#x5E7F;&#x64AD;&#x3002;</p>
+<p>&#x540C;&#x7406;&#xFF0C;&#x5728;&#x4E4B;&#x524D;&#x7248;&#x672C;&#x7684; Android &#x4E2D;&#xFF0C;&#x5E94;&#x7528;&#x53EF;&#x4EE5;&#x6CE8;&#x518C;&#x63A5;&#x6536;&#x6765;&#x81EA;&#x5176;&#x4ED6;&#x5E94;&#x7528;&#xFF08;&#x4F8B;&#x5982;&#x76F8;&#x673A;&#xFF09;&#x7684;&#x9690;&#x5F0F; <code>ACTION_NEW_PICTURE</code> &#x548C; <code>ACTION_NEW_VIDEO</code> &#x5E7F;&#x64AD;&#x3002;&#x5F53;&#x7528;&#x6237;&#x4F7F;&#x7528;&#x76F8;&#x673A;&#x5E94;&#x7528;&#x62CD;&#x6444;&#x7167;&#x7247;&#x65F6;&#xFF0C;&#x8FD9;&#x4E9B;&#x5E94;&#x7528;&#x5373;&#x4F1A;&#x88AB;&#x5524;&#x9192;&#x4EE5;&#x5904;&#x7406;&#x5E7F;&#x64AD;&#x3002;</p>
+<p>&#x4E3A;&#x7F13;&#x89E3;&#x8FD9;&#x4E9B;&#x95EE;&#x9898;&#xFF0C;Android 7.0 &#x5E94;&#x7528;&#x4E86;&#x4EE5;&#x4E0B;&#x4F18;&#x5316;&#x63AA;&#x65BD;&#xFF1A;</p>
+<ul>
+<li>&#x9762;&#x5411; Android 7.0 &#x5F00;&#x53D1;&#x7684;&#x5E94;&#x7528;&#x4E0D;&#x4F1A;&#x6536;&#x5230; <code>CONNECTIVITY_ACTION</code> &#x5E7F;&#x64AD;&#xFF0C;&#x5373;&#x4F7F;&#x5B83;&#x4EEC;&#x5DF2;&#x6709;&#x6E05;&#x5355;&#x6761;&#x76EE;&#x6765;&#x8BF7;&#x6C42;&#x63A5;&#x53D7;&#x8FD9;&#x4E9B;&#x4E8B;&#x4EF6;&#x7684;&#x901A;&#x77E5;&#x3002;&#x5728;&#x524D;&#x53F0;&#x8FD0;&#x884C;&#x7684;&#x5E94;&#x7528;&#x5982;&#x679C;&#x4F7F;&#x7528; <code>BroadcastReceiver</code> &#x8BF7;&#x6C42;&#x63A5;&#x6536;&#x901A;&#x77E5;&#xFF0C;&#x5219;&#x4ECD;&#x53EF;&#x4EE5;&#x5728;&#x4E3B;&#x7EBF;&#x7A0B;&#x4E2D;&#x4FA6;&#x542C; <code>CONNECTIVITY_CHANGE</code>&#x3002;</li>
+<li>&#x5E94;&#x7528;&#x65E0;&#x6CD5;&#x53D1;&#x9001;&#x6216;&#x63A5;&#x6536; <code>ACTION_NEW_PICTURE</code> &#x6216; <code>ACTION_NEW_VIDEO</code> &#x5E7F;&#x64AD;&#x3002;&#x6B64;&#x9879;&#x4F18;&#x5316;&#x4F1A;&#x5F71;&#x54CD;&#x6240;&#x6709;&#x5E94;&#x7528;&#xFF0C;&#x800C;&#x4E0D;&#x4EC5;&#x4EC5;&#x662F;&#x9762;&#x5411; Android 7.0 &#x7684;&#x5E94;&#x7528;&#x3002;</li>
+</ul>
+<p>&#x5982;&#x679C;&#x60A8;&#x7684;&#x5E94;&#x7528;&#x4F7F;&#x7528;&#x4EFB;&#x4F55; intent&#xFF0C;&#x60A8;&#x4ECD;&#x9700;&#x8981;&#x5C3D;&#x5FEB;&#x79FB;&#x9664;&#x5B83;&#x4EEC;&#x7684;&#x4F9D;&#x8D56;&#x5173;&#x7CFB;&#xFF0C;&#x4EE5;&#x6B63;&#x786E;&#x9002;&#x914D; Android 7.0 &#x8BBE;&#x5907;&#x3002;Android &#x6846;&#x67B6;&#x63D0;&#x4F9B;&#x591A;&#x4E2A;&#x89E3;&#x51B3;&#x65B9;&#x6848;&#x6765;&#x7F13;&#x89E3;&#x5BF9;&#x8FD9;&#x4E9B;&#x9690;&#x5F0F;&#x5E7F;&#x64AD;&#x7684;&#x9700;&#x6C42;&#x3002;&#x4F8B;&#x5982;&#xFF0C;<code>JobScheduler</code> API &#x63D0;&#x4F9B;&#x4E86;&#x4E00;&#x4E2A;&#x7A33;&#x5065;&#x53EF;&#x9760;&#x7684;&#x673A;&#x5236;&#x6765;&#x5B89;&#x6392;&#x6EE1;&#x8DB3;&#x6307;&#x5B9A;&#x6761;&#x4EF6;&#xFF08;&#x4F8B;&#x5982;&#x8FDE;&#x5165;&#x65E0;&#x9650;&#x6D41;&#x91CF;&#x7F51;&#x7EDC;&#xFF09;&#x65F6;&#x6240;&#x6267;&#x884C;&#x7684;&#x7F51;&#x7EDC;&#x64CD;&#x4F5C;&#x3002;&#x60A8;&#x751A;&#x81F3;&#x53EF;&#x4EE5;&#x4F7F;&#x7528; <code>JobScheduler</code> &#x6765;&#x9002;&#x5E94;&#x5185;&#x5BB9;&#x63D0;&#x4F9B;&#x7A0B;&#x5E8F;&#x53D8;&#x5316;&#x3002;</p>
+<p>&#x6240;&#x4EE5;&#x8BF4;&#xFF0C;&#x5728;Android&#x7684;&#x4E16;&#x754C;&#xFF0C;&#x5230;&#x5904;&#x90FD;&#x5145;&#x6EE1;&#x7740;&#x5E7F;&#x64AD;&#xFF0C;&#x5C31;&#x662F;&#x4E3A;&#x4E86;&#x7528;&#x6765;&#x76D1;&#x542C;&#x624B;&#x673A;&#x7684;&#x5404;&#x79CD;&#x72B6;&#x6001;&#xFF0C;&#x7ED9;&#x7528;&#x6237;&#x63D0;&#x9192;&#xFF0C;&#x8FD9;&#x662F;&#x4E00;&#x79CD;&#x5F88;&#x597D;&#x7684;&#x7528;&#x6237;&#x4F53;&#x9A8C;&#xFF0C;&#x4E0D;&#x8FC7;&#x4EFB;&#x4F55;&#x4E8B;&#x60C5;&#x90FD;&#x662F;&#x5982;&#x6B64;&#xFF0C;&#x5E7F;&#x64AD;&#x4E5F;&#x4E0D;&#x53EF;&#x4EE5;&#x591A;&#x7528;&#x54E6;&#xFF0C;&#x53E6;&#x5916;&#x9644;&#x4E0A;&#x9879;&#x76EE;&#x5730;&#x5740;&#xFF1A;<a href="https://github.com/flemingme/NetworkChange" target="_blank" rel="external">https://github.com/flemingme/NetworkChange</a> &#x4F9B;&#x53C2;&#x8003;&#x3002;</p>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/BroadcastReceiver/">BroadcastReceiver</a>
+  </div>
+
+</div>
+
+	<div class="article-share" id="share">
+	
+	<div class="share-jiathis">
+	  <div class="jiathis_style_24x24">
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_googleplus"></a>
+	<a class="jiathis_button_douban"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+    var jiathis_config={
+    data_track_clickback:true,
+    sm:"copy,renren,cqq",
+    pic:"",
+    summary:"",
+     ralateuid:{"tsina":"coder_JL"},hideMore:false}
+    
+  </script> 
+<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=
+2141709" charset="utf-8"></script>
+	 </div>
+	
+	</div>
+
+
+</footer>   	       
+	</article>
+	<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/02/14/Android中丰富的对话框/" title="Android中丰富的对话框">
+  <strong>上一篇：</strong><br>
+  <span>
+  Android中丰富的对话框</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/12/17/如何利用LruCache进行数据缓存/" title="如何利用LruCache进行数据缓存">
+ <strong>下一篇：</strong><br> 
+ <span>如何利用LruCache进行数据缓存
+</span>
+</a>
+</div>
+
+</nav>
+	
+</div>
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="flemingme" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js"></script>
+</div>
+
+  
+
+  <div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Dialog/" title="Dialog">Dialog<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LruCache/" title="LruCache">LruCache<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Eclipse-ADT/" title="Eclipse ADT">Eclipse ADT<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android-Studio/" title="Android Studio">Android Studio<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/BroadcastReceiver/" title="BroadcastReceiver">BroadcastReceiver<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Git/" title="Git">Git<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/EditText/" title="EditText">EditText<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/SQLite/" title="SQLite">SQLite<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MVP/" title="MVP">MVP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/AsycTask/" title="AsycTask">AsycTask<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Handler/" title="Handler">Handler<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Message/" title="Message">Message<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://www.oschina.net/android" target="_blank" title="Androdi开发专区">Androdi开发专区</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://stormzhang.com" target="_blank" title="stormzhang">stormzhang</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://pengtao.me" target="_blank" title="CPPAlien">CPPAlien</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuxiaolong.me" target="_blank" title="吴小龙同學">吴小龙同學</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://andyleeblog.cn" target="_blank" title="Andy">Andy</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://lawaias.github.io" target="_blank" title="LawAias">LawAias</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.yumez.cn" target="_blank" title="yuez">yuez</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://kotliner.cn" target="_blank" title="Kotlin">Kotlin</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">新浪微博</p>
+    <iframe width="100%" height="119" class="share_self" frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=null&verifier=&dpc=1"></iframe>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/flemingme" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		<a href="https://twitter.com/fleming_chen" target="_blank" class="icon-twitter" title="twitter"></a>
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/flemingchen" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:jialongchen5@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="Fleming Chen">Fleming Chen</a>
+		
+		
+		</p>
+</div></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+  </body>
